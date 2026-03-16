@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Community Voting — Civic Nili</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+<nav class="navbar">
+  <div class="container">
+    <a href="/citizen/dashboard" class="nav-brand">Civic<span>Nili</span></a>
+    <ul class="nav-links">
+      <li><a href="/citizen/dashboard">Dashboard</a></li>
+      <li><a href="/citizen/report">Report</a></li>
+      <li><a href="/citizen/voting">Voting</a></li>
+      <li><a href="/citizen/profile">Profile</a></li>
+      <li><a href="#" onclick="logout()" class="btn btn-sm btn-outline">Logout</a></li>
+    </ul>
+    <button class="hamburger" onclick="document.querySelector('.nav-links').classList.toggle('open')"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<div class="dashboard">
+  <aside class="sidebar">
+    <ul class="sidebar-nav" id="sidebar-nav"></ul>
+  </aside>
+  <main class="dash-main">
+    <div class="dash-header" data-animate>
+      <h1>🗳️ Community Voting</h1>
+      <p>Vote on issues that matter to your community. Higher votes = higher priority.</p>
+    </div>
+
+    <!-- Filter -->
+    <div style="display:flex; gap:12px; margin-bottom:24px; flex-wrap:wrap;" data-animate>
+      <button class="btn btn-sm btn-primary" onclick="filterIssues('all', this)">All Issues</button>
+      <button class="btn btn-sm btn-ghost" onclick="filterIssues('pothole', this)">🕳️ Potholes</button>
+      <button class="btn btn-sm btn-ghost" onclick="filterIssues('light', this)">💡 Streetlights</button>
+      <button class="btn btn-sm btn-ghost" onclick="filterIssues('garbage', this)">🗑️ Garbage</button>
+      <button class="btn btn-sm btn-ghost" onclick="filterIssues('water', this)">💧 Water</button>
+      <button class="btn btn-sm btn-ghost" onclick="filterIssues('road', this)">🛣️ Roads</button>
+    </div>
+
+    <div class="issue-cards" id="voting-cards">
+      <!-- Issue 1 -->
+      <div class="issue-card" data-animate data-delay="0" data-type="pothole">
+        <div class="issue-card-img" style="background-image: url('https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?w=400&h=250&fit=crop');">
+          <span class="badge badge-high">High Priority</span>
+        </div>
+        <div class="issue-card-body">
+          <h4>Large Pothole on MG Road</h4>
+          <div class="issue-meta"><span>📍 Sector 21, Mumbai</span><span>🕐 2 hrs ago</span></div>
+          <p class="issue-desc">Deep pothole causing traffic hazard near the main intersection. Multiple vehicles damaged.</p>
+          <div class="vote-actions">
+            <button class="vote-btn upvote" onclick="vote(this,'i1','up')">👍 Upvote</button>
+            <span class="vote-count">47</span>
+            <button class="vote-btn downvote" onclick="vote(this,'i1','down')">👎</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Issue 2 -->
+      <div class="issue-card" data-animate data-delay="100" data-type="garbage">
+        <div class="issue-card-img" style="background-image: url('https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?w=400&h=250&fit=crop');">
+          <span class="badge badge-medium">Medium</span>
+        </div>
+        <div class="issue-card-body">
+          <h4>Garbage Pile Near Central Market</h4>
+          <div class="issue-meta"><span>📍 Central Market, Mumbai</span><span>🕐 1 day ago</span></div>
+          <p class="issue-desc">Uncollected garbage pile growing near the vegetable market entrance. Health hazard.</p>
+          <div class="vote-actions">
+            <button class="vote-btn upvote" onclick="vote(this,'i2','up')">👍 Upvote</button>
+            <span class="vote-count">23</span>
+            <button class="vote-btn downvote" onclick="vote(this,'i2','down')">👎</button>
+          </div>
+        </div>
+      </div>
+
+        <!-- Issue 3 -->
+        <div class="issue-card" data-animate data-delay="200" data-type="water">
+          <div class="issue-card-img" style="background-image: url('https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=400&h=250&fit=crop');">
+            <span class="badge badge-high">High Priority</span>
+          </div>
+        <div class="issue-card-body">
+          <h4>Water Pipeline Leakage</h4>
+          <div class="issue-meta"><span>📍 Sector 14, Mumbai</span><span>🕐 5 hrs ago</span></div>
+          <p class="issue-desc">Major water leakage from underground pipeline. Road is flooded for 50 meters.</p>
+          <div class="vote-actions">
+            <button class="vote-btn upvote" onclick="vote(this,'i3','up')">👍 Upvote</button>
+            <span class="vote-count">89</span>
+            <button class="vote-btn downvote" onclick="vote(this,'i3','down')">👎</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Issue 4 -->
+      <div class="issue-card" data-animate data-delay="300" data-type="light">
+        <div class="issue-card-img" style="background-image: url('https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=400&h=250&fit=crop');">
+          <span class="badge badge-low">Low Priority</span>
+        </div>
+        <div class="issue-card-body">
+          <h4>Broken Streetlight on Park Ave</h4>
+          <div class="issue-meta"><span>📍 Park Avenue, Delhi</span><span>🕐 2 days ago</span></div>
+          <p class="issue-desc">Streetlight has been non-functional for a week. Area is very dark at night.</p>
+          <div class="vote-actions">
+            <button class="vote-btn upvote" onclick="vote(this,'i4','up')">👍 Upvote</button>
+            <span class="vote-count">12</span>
+            <button class="vote-btn downvote" onclick="vote(this,'i4','down')">👎</button>
+          </div>
+        </div>
+      </div>
+
+        <!-- Issue 5 -->
+        <div class="issue-card" data-animate data-delay="400" data-type="road">
+          <div class="issue-card-img" style="background-image: url('https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?w=400&h=250&fit=crop');">
+            <span class="badge badge-medium">Medium</span>
+          </div>
+        <div class="issue-card-body">
+          <h4>Cracked Road Surface</h4>
+          <div class="issue-meta"><span>📍 Ring Road, Bangalore</span><span>🕐 6 hrs ago</span></div>
+          <p class="issue-desc">Large cracks appearing on the road surface. Getting worse with each rain.</p>
+          <div class="vote-actions">
+            <button class="vote-btn upvote" onclick="vote(this,'i5','up')">👍 Upvote</button>
+            <span class="vote-count">31</span>
+            <button class="vote-btn downvote" onclick="vote(this,'i5','down')">👎</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Issue 6 -->
+      <div class="issue-card" data-animate data-delay="500" data-type="garbage">
+        <div class="issue-card-img" style="background-image: url('https://images.unsplash.com/photo-1604187351574-c75ca79f5807?w=400&h=250&fit=crop');">
+          <span class="badge badge-high">High Priority</span>
+        </div>
+        <div class="issue-card-body">
+          <h4>Illegal Dumping Site</h4>
+          <div class="issue-meta"><span>📍 River Road, Chennai</span><span>🕐 8 hrs ago</span></div>
+          <p class="issue-desc">Construction debris illegally dumped near the riverbank. Environmental hazard.</p>
+          <div class="vote-actions">
+            <button class="vote-btn upvote" onclick="vote(this,'i6','up')">👍 Upvote</button>
+            <span class="vote-count">56</span>
+            <button class="vote-btn downvote" onclick="vote(this,'i6','down')">👎</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="/js/app.js"></script>
+<script>
+  const session = Session.get();
+  if (!session || session.role !== 'citizen') { window.location.href = '/login?role=citizen'; }
+  else {
+    document.getElementById('sidebar-nav').innerHTML = getNavHTML('citizen', '/citizen/voting');
+    document.addEventListener('DOMContentLoaded', restoreVoteStates);
+    // Also call immediately in case DOM already loaded
+    if (document.readyState !== 'loading') restoreVoteStates();
+  }
+
+  function filterIssues(type, btn) {
+    document.querySelectorAll('.dash-main > div:first-of-type button').forEach(b => {
+      b.className = 'btn btn-sm btn-ghost';
+    });
+    btn.className = 'btn btn-sm btn-primary';
+
+    document.querySelectorAll('.issue-card').forEach(card => {
+      if (type === 'all' || card.dataset.type === type) {
+        card.style.display = '';
+      } else {
+        card.style.display = 'none';
+      }
+    });
+  }
+</script>
+</body>
+</html>

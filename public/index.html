@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Civic Nili — Let Cities Hear Their Citizens</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="container">
+    <a href="/" class="nav-brand">Civic<span>Nili</span></a>
+    <ul class="nav-links">
+      <li><a href="#how-it-works">How It Works</a></li>
+      <li><a href="#why-us">Why Us</a></li>
+      <li><a href="#portals">Portals</a></li>
+      <li><a href="#comparison">Compare</a></li>
+      <li><a href="/login" class="btn btn-sm btn-primary">Get Started →</a></li>
+    </ul>
+    <button class="hamburger" onclick="document.querySelector('.nav-links').classList.toggle('open')">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-grid">
+      <div class="hero-content">
+        <div class="hero-badge" data-animate data-delay="100">
+          <span class="dot"></span> Platform Live — 42 Cities Connected
+        </div>
+        <h1 data-animate data-delay="200">Let Cities Hear<br>Their <span class="gradient-text">Citizens</span></h1>
+        <p data-animate data-delay="300">AI-powered civic issue resolution that connects you directly with municipal authorities. Report, vote, and track — together we build better cities.</p>
+        <div class="hero-actions" data-animate data-delay="400">
+          <a href="/login" class="btn btn-primary btn-lg">Report an Issue →</a>
+          <a href="#how-it-works" class="btn btn-outline btn-lg" style="border-color: rgba(255,255,255,.3); color: #fff;">See How It Works</a>
+        </div>
+      </div>
+      <div class="hero-visual" data-animate data-delay="500">
+        <div class="hero-card">
+          <div class="hero-card-header">
+            <div class="hero-card-dot" style="background: var(--red)"></div>
+            <div class="hero-card-dot" style="background: var(--amber)"></div>
+            <div class="hero-card-dot" style="background: var(--green)"></div>
+            <span style="color: rgba(255,255,255,.5); font-size:.8rem; margin-left: auto;">Live Dashboard</span>
+          </div>
+          <div class="hero-stats">
+            <div class="hero-stat">
+              <div class="number" data-count="12847">0</div>
+              <div class="label">Issues Reported</div>
+            </div>
+            <div class="hero-stat">
+              <div class="number" data-count="9432">0</div>
+              <div class="label">Issues Resolved</div>
+            </div>
+            <div class="hero-stat">
+              <div class="number" data-count="34219">0</div>
+              <div class="label">Active Citizens</div>
+            </div>
+            <div class="hero-stat">
+              <div class="number" data-count="42">0</div>
+              <div class="label">Cities Connected</div>
+            </div>
+          </div>
+          <div class="floating-badge fb1">✅ Pothole fixed — Sector 21</div>
+          <div class="floating-badge fb2">🗳️ 847 votes on water issue</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS BAR -->
+<section class="stats-bar">
+  <div class="container">
+    <div class="stats-grid">
+      <div class="stat-item" data-animate>
+        <div class="stat-number" data-count="73" data-suffix="%">0%</div>
+        <div class="stat-label">Resolution Rate</div>
+      </div>
+      <div class="stat-item" data-animate data-delay="100">
+        <div class="stat-number" data-count="2" data-suffix=" hrs">0 hrs</div>
+        <div class="stat-label">Avg. Response Time</div>
+      </div>
+      <div class="stat-item" data-animate data-delay="200">
+        <div class="stat-number" data-count="95" data-suffix="%">0%</div>
+        <div class="stat-label">AI Accuracy</div>
+      </div>
+      <div class="stat-item" data-animate data-delay="300">
+        <div class="stat-number" data-count="42">0</div>
+        <div class="stat-label">Cities Connected</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="section" id="how-it-works" style="background: #fff;">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag" data-animate>The Process</span>
+      <h2 data-animate data-delay="100">How Civic Nili Works</h2>
+      <p data-animate data-delay="200">From spotting an issue to getting it resolved — a seamless, AI-driven pipeline that puts citizens first.</p>
+    </div>
+
+    <div class="flow-steps" style="max-width: 700px; margin: 0 auto;">
+      <div class="flow-step" data-animate data-delay="0">
+        <div class="flow-step-num">1</div>
+        <div class="flow-step-content">
+          <h3>📱 Spot & Report</h3>
+          <p>Snap a photo of any civic issue — pothole, broken light, garbage pile. Upload it through the citizen portal with one tap.</p>
+        </div>
+      </div>
+      <div class="flow-step" data-animate data-delay="100">
+        <div class="flow-step-num">2</div>
+        <div class="flow-step-content">
+          <h3>🤖 AI Analysis</h3>
+          <p>Our AI instantly classifies the issue type, severity, and routes it to the right department. If AI is unsure, it goes to a city official for manual review.</p>
+        </div>
+      </div>
+      <div class="flow-step" data-animate data-delay="200">
+        <div class="flow-step-num">3</div>
+        <div class="flow-step-content">
+          <h3>🗳️ Community Voting</h3>
+          <p>Citizens vote on reported issues. More votes = higher priority. Your community decides what matters most.</p>
+        </div>
+      </div>
+      <div class="flow-step" data-animate data-delay="300">
+        <div class="flow-step-num">4</div>
+        <div class="flow-step-content">
+          <h3>⚡ Smart Priority Engine</h3>
+          <p>Our scoring engine combines AI severity, community votes, location impact, and recency to create a dynamic priority score.</p>
+        </div>
+      </div>
+      <div class="flow-step" data-animate data-delay="400">
+        <div class="flow-step-num">5</div>
+        <div class="flow-step-content">
+          <h3>🏛️ Municipal Action</h3>
+          <p>Top-priority issues are pushed to municipal teams. Real-time tracking from assignment to resolution. Every step is transparent.</p>
+        </div>
+      </div>
+      <div class="flow-step" data-animate data-delay="500">
+        <div class="flow-step-num">6</div>
+        <div class="flow-step-content">
+          <h3>🏆 Points & Recognition</h3>
+          <p>Earn points for reporting, voting, and validating. Climb the leaderboard. Your civic engagement gets recognized.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHY US -->
+<section class="section" id="why-us">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag" data-animate>Why Choose Us</span>
+      <h2 data-animate data-delay="100">Why Civic Nili?</h2>
+      <p data-animate data-delay="200">We're not just another complaint portal. We're building the future of citizen-government collaboration.</p>
+    </div>
+
+    <div class="why-grid">
+      <div class="why-card" data-animate data-delay="0">
+        <div class="why-icon" style="background: rgba(37,99,235,.1); color: var(--primary);">🔍</div>
+        <div>
+          <h4>Full Transparency</h4>
+          <p>Every report tracked from submission to resolution. No black holes. No lost complaints. Real-time status updates.</p>
+        </div>
+      </div>
+      <div class="why-card" data-animate data-delay="100">
+        <div class="why-icon" style="background: rgba(13,148,136,.1); color: var(--teal);">⚡</div>
+        <div>
+          <h4>AI-Powered Speed</h4>
+          <p>Instant issue classification routes your report to the right department in seconds, not days.</p>
+        </div>
+      </div>
+      <div class="why-card" data-animate data-delay="200">
+        <div class="why-icon" style="background: rgba(245,158,11,.1); color: var(--amber);">👥</div>
+        <div>
+          <h4>Community Power</h4>
+          <p>Citizens vote together to prioritize what matters. Democracy in action at the neighborhood level.</p>
+        </div>
+      </div>
+      <div class="why-card" data-animate data-delay="300">
+        <div class="why-icon" style="background: rgba(16,185,129,.1); color: var(--green);">🏆</div>
+        <div>
+          <h4>Gamified Engagement</h4>
+          <p>Earn points, climb leaderboards, and get recognized for making your city better. Civic duty meets motivation.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PORTALS -->
+<section class="section" id="portals" style="background: #fff;">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag" data-animate>Access Points</span>
+      <h2 data-animate data-delay="100">Choose Your Portal</h2>
+      <p data-animate data-delay="200">Three dedicated portals for three key roles in the civic ecosystem.</p>
+    </div>
+
+    <div class="portal-cards">
+      <!-- Citizen -->
+      <div class="portal-card" data-animate data-delay="0">
+        <div class="portal-icon" style="background: rgba(37,99,235,.1); color: var(--primary);">🏙️</div>
+        <h3>Citizen Portal</h3>
+        <p class="portal-desc">Report issues, vote on priorities, earn points, and track your city's progress.</p>
+        <div class="demo-creds">
+          <strong>Demo:</strong> citizen_demo / demo123
+        </div>
+        <a href="/login?role=citizen" class="btn btn-primary" style="width:100%; justify-content:center;">Enter Portal →</a>
+      </div>
+      <!-- Admin -->
+      <div class="portal-card" data-animate data-delay="150">
+        <div class="portal-icon" style="background: rgba(245,158,11,.1); color: var(--amber);">🏛️</div>
+        <h3>Municipal Admin</h3>
+        <p class="portal-desc">Review AI failures, validate reports, override priorities, and manage civic queues.</p>
+        <div class="demo-creds">
+          <strong>Demo:</strong> admin_demo / demo123<br>
+          <span style="font-size:.7rem; color: var(--amber);">🔐 2FA Required (simulated)</span>
+        </div>
+        <a href="/login?role=admin" class="btn btn-amber" style="width:100%; justify-content:center;">Enter Portal →</a>
+      </div>
+      <!-- Developer -->
+      <div class="portal-card" data-animate data-delay="300">
+        <div class="portal-icon" style="background: rgba(13,148,136,.1); color: var(--teal);">⚙️</div>
+        <h3>Developer Admin</h3>
+        <p class="portal-desc">Manage training data, retrain AI models, monitor system health, manage users.</p>
+        <div class="demo-creds">
+          <strong>Demo:</strong> dev_demo / demo123<br>
+          <span style="font-size:.7rem; color: var(--teal);">🛡️ System Access Badge</span>
+        </div>
+        <a href="/login?role=developer" class="btn btn-teal" style="width:100%; justify-content:center;">Enter Portal →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COMPARISON TABLE -->
+<section class="section" id="comparison">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag" data-animate>Comparison</span>
+      <h2 data-animate data-delay="100">Civic Nili vs Traditional Systems</h2>
+      <p data-animate data-delay="200">See why smart cities choose AI-powered civic engagement.</p>
+    </div>
+
+    <div data-animate data-delay="300" style="overflow-x: auto;">
+      <table class="comparison-table">
+        <thead>
+          <tr>
+            <th>Feature</th>
+            <th>Civic Nili</th>
+            <th>Traditional Systems</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Report Tracking</td><td class="check">✓ Real-time end-to-end</td><td class="cross">✗ Manual, often lost</td></tr>
+          <tr><td>Issue Classification</td><td class="check">✓ AI-powered instant</td><td class="cross">✗ Manual sorting (days)</td></tr>
+          <tr><td>Priority Setting</td><td class="check">✓ Community + AI scoring</td><td class="cross">✗ Bureaucratic discretion</td></tr>
+          <tr><td>Response Time</td><td class="check">✓ ~2 hours average</td><td class="cross">✗ 7-30 days average</td></tr>
+          <tr><td>Citizen Engagement</td><td class="check">✓ Gamified, interactive</td><td class="cross">✗ One-way complaints</td></tr>
+          <tr><td>Transparency</td><td class="check">✓ Public ledger, live status</td><td class="cross">✗ Opaque processes</td></tr>
+          <tr><td>False Report Detection</td><td class="check">✓ AI + community validation</td><td class="cross">✗ No systematic detection</td></tr>
+          <tr><td>Data-Driven Insights</td><td class="check">✓ Real-time analytics</td><td class="cross">✗ Annual reports only</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="section" style="background: var(--gradient-hero);">
+  <div class="container text-center">
+    <h2 style="color: #fff; font-size: 2.5rem; margin-bottom: 16px;" data-animate>Ready to Transform Your City?</h2>
+    <p style="color: rgba(255,255,255,.6); font-size: 1.1rem; max-width: 500px; margin: 0 auto 32px;" data-animate data-delay="100">Join thousands of citizens who are already making a difference. Your voice matters.</p>
+    <div data-animate data-delay="200">
+      <a href="/login" class="btn btn-primary btn-lg">Get Started Free →</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand">CivicNili</div>
+        <p style="max-width: 280px; font-size: .9rem; margin-top: 8px;">AI-powered civic engagement platform connecting citizens with municipal authorities for a better tomorrow.</p>
+      </div>
+      <div>
+        <h4>Platform</h4>
+        <ul>
+          <li><a href="#how-it-works">How It Works</a></li>
+          <li><a href="#portals">Portals</a></li>
+          <li><a href="/priority">Priority Engine</a></li>
+          <li><a href="/ledger">National Ledger</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Portals</h4>
+        <ul>
+          <li><a href="/login?role=citizen">Citizen Portal</a></li>
+          <li><a href="/login?role=admin">Admin Portal</a></li>
+          <li><a href="/login?role=developer">Developer Portal</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Resources</h4>
+        <ul>
+          <li><a href="#">Documentation</a></li>
+          <li><a href="#">API Reference</a></li>
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Terms of Service</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Civic Nili. All rights reserved.</span>
+      <span>Built with ❤️ for better cities</span>
+    </div>
+  </div>
+</footer>
+
+<script src="/js/app.js"></script>
+</body>
+</html>

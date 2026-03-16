@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard — Civic Nili</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+<nav class="navbar">
+  <div class="container">
+    <a href="/admin/dashboard" class="nav-brand">Civic<span>Nili</span></a>
+    <ul class="nav-links">
+      <li><a href="/admin/dashboard">Dashboard</a></li>
+      <li><a href="/admin/review">Review Queue</a></li>
+      <li><a href="/priority">Priority</a></li>
+      <li><a href="/ledger">Ledger</a></li>
+      <li><a href="#" onclick="logout()" class="btn btn-sm btn-outline">Logout</a></li>
+    </ul>
+    <button class="hamburger" onclick="document.querySelector('.nav-links').classList.toggle('open')"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<div class="dashboard">
+  <aside class="sidebar"><ul class="sidebar-nav" id="sidebar-nav"></ul></aside>
+  <main class="dash-main">
+    <div class="dash-header" data-animate>
+      <h1>🏛️ Municipal Admin Dashboard</h1>
+      <p>Manage civic issues, review AI failures, and prioritize resolution</p>
+    </div>
+
+    <div class="stat-cards">
+      <div class="stat-card" data-animate style="border-left: 4px solid var(--amber);">
+        <div class="sc-label">Pending AI Reviews</div>
+        <div class="sc-value" style="color: var(--amber);" id="pending-count" data-count="5">0</div>
+        <div class="sc-change down">Needs attention</div>
+      </div>
+      <div class="stat-card" data-animate data-delay="100" style="border-left: 4px solid var(--primary);">
+        <div class="sc-label">Total Active Issues</div>
+        <div class="sc-value" style="color: var(--primary);" data-count="142">0</div>
+        <div class="sc-change up">↑ 12 today</div>
+      </div>
+      <div class="stat-card" data-animate data-delay="200" style="border-left: 4px solid var(--green);">
+        <div class="sc-label">Resolved Today</div>
+        <div class="sc-value" style="color: var(--green);" data-count="28">0</div>
+        <div class="sc-change up">↑ 15% vs yesterday</div>
+      </div>
+      <div class="stat-card" data-animate data-delay="300" style="border-left: 4px solid var(--teal);">
+        <div class="sc-label">Avg Resolution Time</div>
+        <div class="sc-value" style="color: var(--teal);">3.2h</div>
+        <div class="sc-change up">↓ 0.5h improvement</div>
+      </div>
+    </div>
+
+    <!-- Priority Queue -->
+    <h3 style="margin-bottom: 16px;" data-animate>High Priority Queue</h3>
+    <div class="card" style="padding: 0; overflow: hidden;" data-animate data-delay="100">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Issue</th>
+            <th>Location</th>
+            <th>Priority Score</th>
+            <th>Votes</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Water Pipeline Leakage</strong></td>
+            <td>Sector 14, Mumbai</td>
+            <td><span style="color:var(--red); font-weight:700;">94</span>/100</td>
+            <td>89 🗳️</td>
+            <td><span class="badge badge-red">Critical</span></td>
+            <td><button class="btn btn-sm btn-primary" onclick="showToast('Dispatching team...','success')">Dispatch</button></td>
+          </tr>
+          <tr>
+            <td><strong>Large Pothole on MG Road</strong></td>
+            <td>Sector 21, Mumbai</td>
+            <td><span style="color:var(--amber); font-weight:700;">78</span>/100</td>
+            <td>47 🗳️</td>
+            <td><span class="badge badge-amber">High</span></td>
+            <td><button class="btn btn-sm btn-primary" onclick="showToast('Dispatching team...','success')">Dispatch</button></td>
+          </tr>
+          <tr>
+            <td><strong>Illegal Dumping Site</strong></td>
+            <td>River Road, Chennai</td>
+            <td><span style="color:var(--amber); font-weight:700;">72</span>/100</td>
+            <td>56 🗳️</td>
+            <td><span class="badge badge-amber">High</span></td>
+            <td><button class="btn btn-sm btn-primary" onclick="showToast('Dispatching team...','success')">Dispatch</button></td>
+          </tr>
+          <tr>
+            <td><strong>Garbage Pile Near Market</strong></td>
+            <td>Central Market, Mumbai</td>
+            <td><span style="color:var(--primary); font-weight:700;">55</span>/100</td>
+            <td>23 🗳️</td>
+            <td><span class="badge badge-blue">Medium</span></td>
+            <td><button class="btn btn-sm btn-outline" onclick="showToast('Added to queue','info')">Queue</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- AI Failure Alert -->
+    <div style="margin-top: 32px; padding: 24px; background: rgba(245,158,11,.06); border: 1px solid rgba(245,158,11,.2); border-radius: var(--radius-lg);" data-animate>
+      <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+        <span style="font-size: 1.5rem;">⚠️</span>
+        <h3 style="color: var(--amber);">AI Failure Reviews Pending</h3>
+        <span class="badge badge-amber" id="ai-fail-badge">5 pending</span>
+      </div>
+      <p style="color: var(--slate-light); font-size: .9rem; margin-bottom: 16px;">These reports could not be classified by AI (confidence &lt;80%). Manual classification required.</p>
+      <a href="/admin/review" class="btn btn-amber">Review Now →</a>
+    </div>
+
+    <!-- Chart -->
+    <h3 style="margin: 32px 0 16px;" data-animate>Issues by Category (This Week)</h3>
+    <div class="chart-placeholder" style="height: 250px; align-items: flex-end;" data-animate data-delay="100">
+      <div class="chart-bar" data-height="80%" style="background: var(--gradient-primary);"><span class="chart-val">34</span><span class="chart-label">Pothole</span></div>
+      <div class="chart-bar" data-height="50%" style="background: linear-gradient(135deg, var(--teal), var(--teal-light));"><span class="chart-val">21</span><span class="chart-label">Garbage</span></div>
+      <div class="chart-bar" data-height="35%" style="background: linear-gradient(135deg, var(--amber), #F97316);"><span class="chart-val">15</span><span class="chart-label">Lights</span></div>
+      <div class="chart-bar" data-height="65%" style="background: linear-gradient(135deg, #3B82F6, #60A5FA);"><span class="chart-val">27</span><span class="chart-label">Water</span></div>
+      <div class="chart-bar" data-height="40%" style="background: linear-gradient(135deg, var(--slate), var(--slate-light));"><span class="chart-val">17</span><span class="chart-label">Roads</span></div>
+      <div class="chart-bar" data-height="25%" style="background: linear-gradient(135deg, var(--red), var(--red-light));"><span class="chart-val">10</span><span class="chart-label">Other</span></div>
+    </div>
+  </main>
+</div>
+
+<script src="/js/app.js"></script>
+<script>
+  const session = Session.get();
+  if (!session || session.role !== 'admin') { window.location.href = '/login?role=admin'; }
+  else { document.getElementById('sidebar-nav').innerHTML = getNavHTML('admin', '/admin/dashboard'); }
+
+  // Update pending count from store
+  document.addEventListener('DOMContentLoaded', () => {
+    const pc = document.getElementById('pending-count');
+    if (pc) pc.dataset.count = CivicStore.pendingReviews;
+    const badge = document.getElementById('ai-fail-badge');
+    if (badge) badge.textContent = CivicStore.pendingReviews + ' pending';
+    initChartBars();
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Analytics — Civic Nili</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+<nav class="navbar">
+  <div class="container">
+    <a href="/dev/dashboard" class="nav-brand">Civic<span>Nili</span></a>
+    <ul class="nav-links">
+      <li><a href="/dev/dashboard">Dashboard</a></li>
+      <li><a href="/dev/training">Training</a></li>
+      <li><a href="/dev/users">Users</a></li>
+      <li><a href="/dev/analytics">Analytics</a></li>
+      <li><a href="#" onclick="logout()" class="btn btn-sm btn-outline">Logout</a></li>
+    </ul>
+    <button class="hamburger" onclick="document.querySelector('.nav-links').classList.toggle('open')"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<div class="dashboard">
+  <aside class="sidebar"><ul class="sidebar-nav" id="sidebar-nav"></ul></aside>
+  <main class="dash-main">
+    <div class="dash-header" data-animate>
+      <h1>📈 System Analytics</h1>
+      <p>Platform health, performance metrics, and usage patterns</p>
+    </div>
+
+    <div class="stat-cards">
+      <div class="stat-card" data-animate style="border-left:4px solid var(--primary);">
+        <div class="sc-label">API Requests (24h)</div>
+        <div class="sc-value" style="color:var(--primary);" data-count="847293">0</div>
+        <div class="sc-change up">↑ 8% vs yesterday</div>
+      </div>
+      <div class="stat-card" data-animate data-delay="100" style="border-left:4px solid var(--green);">
+        <div class="sc-label">Avg Response Time</div>
+        <div class="sc-value" style="color:var(--green);">142ms</div>
+        <div class="sc-change up">↓ 12ms improvement</div>
+      </div>
+      <div class="stat-card" data-animate data-delay="200" style="border-left:4px solid var(--teal);">
+        <div class="sc-label">AI Inferences (24h)</div>
+        <div class="sc-value" style="color:var(--teal);" data-count="3241">0</div>
+        <div class="sc-change up">95.2% success rate</div>
+      </div>
+      <div class="stat-card" data-animate data-delay="300" style="border-left:4px solid var(--amber);">
+        <div class="sc-label">Error Rate</div>
+        <div class="sc-value" style="color:var(--amber);">0.03%</div>
+        <div class="sc-change up">Within threshold</div>
+      </div>
+    </div>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px;">
+      <!-- Reports by Day -->
+      <div>
+        <h3 style="margin-bottom:16px;" data-animate>Reports This Week</h3>
+        <div class="chart-placeholder" style="height:220px;" data-animate data-delay="100">
+          <div class="chart-bar" data-height="45%" style="background:var(--gradient-primary);"><span class="chart-val">42</span><span class="chart-label">Mon</span></div>
+          <div class="chart-bar" data-height="60%" style="background:var(--gradient-primary);"><span class="chart-val">56</span><span class="chart-label">Tue</span></div>
+          <div class="chart-bar" data-height="55%" style="background:var(--gradient-primary);"><span class="chart-val">51</span><span class="chart-label">Wed</span></div>
+          <div class="chart-bar" data-height="75%" style="background:var(--gradient-primary);"><span class="chart-val">70</span><span class="chart-label">Thu</span></div>
+          <div class="chart-bar" data-height="68%" style="background:var(--gradient-primary);"><span class="chart-val">63</span><span class="chart-label">Fri</span></div>
+          <div class="chart-bar" data-height="40%" style="background:var(--gradient-cool);"><span class="chart-val">37</span><span class="chart-label">Sat</span></div>
+          <div class="chart-bar" data-height="85%" style="background:linear-gradient(135deg,var(--green),var(--teal));"><span class="chart-val">79</span><span class="chart-label">Sun</span></div>
+        </div>
+      </div>
+
+      <!-- Resolution Rate -->
+      <div>
+        <h3 style="margin-bottom:16px;" data-animate>Resolution Rate by City</h3>
+        <div class="chart-placeholder" style="height:220px;" data-animate data-delay="200">
+          <div class="chart-bar" data-height="85%" style="background:linear-gradient(135deg,var(--green),var(--teal));"><span class="chart-val">85%</span><span class="chart-label">Mumbai</span></div>
+          <div class="chart-bar" data-height="72%" style="background:linear-gradient(135deg,var(--green),var(--teal));"><span class="chart-val">72%</span><span class="chart-label">Delhi</span></div>
+          <div class="chart-bar" data-height="78%" style="background:linear-gradient(135deg,var(--green),var(--teal));"><span class="chart-val">78%</span><span class="chart-label">Bangalore</span></div>
+          <div class="chart-bar" data-height="65%" style="background:linear-gradient(135deg,var(--amber),#F97316);"><span class="chart-val">65%</span><span class="chart-label">Chennai</span></div>
+          <div class="chart-bar" data-height="90%" style="background:linear-gradient(135deg,var(--green),var(--teal));"><span class="chart-val">90%</span><span class="chart-label">Pune</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- System Health -->
+    <h3 style="margin:32px 0 16px;" data-animate>System Health</h3>
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:16px;" data-animate data-delay="100">
+      <div class="card text-center">
+        <div style="font-size:2rem; margin-bottom:8px;">🟢</div>
+        <h4>API Server</h4>
+        <p style="color:var(--green); font-weight:600; font-size:.9rem;">Healthy</p>
+        <p style="font-size:.75rem; color:var(--slate-light);">Uptime: 99.97%</p>
+      </div>
+      <div class="card text-center">
+        <div style="font-size:2rem; margin-bottom:8px;">🟢</div>
+        <h4>AI Pipeline</h4>
+        <p style="color:var(--green); font-weight:600; font-size:.9rem;">Operational</p>
+        <p style="font-size:.75rem; color:var(--slate-light);">Latency: 230ms avg</p>
+      </div>
+      <div class="card text-center">
+        <div style="font-size:2rem; margin-bottom:8px;">🟢</div>
+        <h4>Database</h4>
+        <p style="color:var(--green); font-weight:600; font-size:.9rem;">Healthy</p>
+        <p style="font-size:.75rem; color:var(--slate-light);">Load: 42%</p>
+      </div>
+      <div class="card text-center">
+        <div style="font-size:2rem; margin-bottom:8px;">🟡</div>
+        <h4>CDN</h4>
+        <p style="color:var(--amber); font-weight:600; font-size:.9rem;">Degraded</p>
+        <p style="font-size:.75rem; color:var(--slate-light);">Cache hit: 87%</p>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="/js/app.js"></script>
+<script>
+  const session = Session.get();
+  if (!session || session.role !== 'developer') { window.location.href = '/login?role=developer'; }
+  else { document.getElementById('sidebar-nav').innerHTML = getNavHTML('developer', '/dev/analytics'); }
+  document.addEventListener('DOMContentLoaded', () => { initChartBars(); });
+</script>
+</body>
+</html>

@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>National Ledger — Civic Nili</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <style>
+    .ledger-hero { background: var(--gradient-hero); color: #fff; padding: 60px 0; }
+    .city-rank { font-family: 'Space Grotesk'; font-weight: 700; font-size: .9rem; color: var(--slate-light); margin-bottom: 8px; }
+    .city-progress { height: 8px; background: var(--border); border-radius: 50px; overflow: hidden; margin-top: 12px; }
+    .city-progress-fill { height: 100%; border-radius: 50px; transition: width 1.5s cubic-bezier(.4,0,.2,1); width: 0; }
+    .ledger-stat-row { display: flex; justify-content: space-between; padding: 8px 0; font-size: .85rem; border-bottom: 1px solid var(--border); }
+    .ledger-stat-row:last-child { border-bottom: none; }
+    .timeline-item { display: flex; gap: 16px; padding: 16px 0; border-bottom: 1px solid var(--border); }
+    .timeline-item:last-child { border-bottom: none; }
+    .timeline-dot { width: 12px; height: 12px; border-radius: 50%; margin-top: 4px; flex-shrink: 0; }
+    .timeline-info h5 { font-size: .9rem; margin-bottom: 2px; }
+    .timeline-info p { font-size: .8rem; color: var(--slate-light); }
+  </style>
+</head>
+<body>
+<nav class="navbar">
+  <div class="container">
+    <a href="/" class="nav-brand">Civic<span>Nili</span></a>
+    <ul class="nav-links">
+      <li><a href="/">Home</a></li>
+      <li><a href="/priority">Priority</a></li>
+      <li><a href="/ledger">Ledger</a></li>
+      <li><a href="/login" class="btn btn-sm btn-primary">Login</a></li>
+    </ul>
+    <button class="hamburger" onclick="document.querySelector('.nav-links').classList.toggle('open')"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<div style="padding-top: 72px;">
+  <!-- Hero -->
+  <section class="ledger-hero">
+    <div class="container text-center">
+      <span class="section-tag" style="background: rgba(37,99,235,.2); color: var(--primary-light);" data-animate>Transparency</span>
+      <h1 style="color:#fff; font-size: 2.8rem; margin: 16px 0;" data-animate data-delay="100">National Civic Ledger</h1>
+      <p style="color:rgba(255,255,255,.6); max-width:600px; margin:0 auto;" data-animate data-delay="200">A transparent, real-time record of civic issue resolution across all connected cities. Every report, every vote, every resolution — publicly tracked.</p>
+    </div>
+  </section>
+
+  <!-- National Stats -->
+  <section class="section-sm" style="background: #fff; border-bottom: 1px solid var(--border);">
+    <div class="container">
+      <div class="stats-grid">
+        <div class="stat-item" data-animate>
+          <div class="stat-number" data-count="12847">0</div>
+          <div class="stat-label">Total Reports Filed</div>
+        </div>
+        <div class="stat-item" data-animate data-delay="100">
+          <div class="stat-number" data-count="9432">0</div>
+          <div class="stat-label">Issues Resolved</div>
+        </div>
+        <div class="stat-item" data-animate data-delay="200">
+          <div class="stat-number" data-count="42">0</div>
+          <div class="stat-label">Cities Connected</div>
+        </div>
+        <div class="stat-item" data-animate data-delay="300">
+          <div class="stat-number" data-count="34219">0</div>
+          <div class="stat-label">Active Citizens</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- City Rankings -->
+  <section class="section">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag" data-animate>City Rankings</span>
+        <h2 data-animate data-delay="100">City Performance Scoreboard</h2>
+        <p data-animate data-delay="200">Cities ranked by their civic resolution score — a composite of resolution rate, response time, and citizen satisfaction.</p>
+      </div>
+
+      <div class="ledger-grid">
+        <div class="ledger-city-card" data-animate>
+          <div class="city-rank">#1</div>
+          <h4>Pune</h4>
+          <div class="city-score" style="color: var(--green);">92</div>
+          <div style="font-size:.8rem; color:var(--slate-light);">Resolution Rate: 90%</div>
+          <div class="city-progress"><div class="city-progress-fill" data-width="92%" style="background: linear-gradient(90deg, var(--green), var(--teal));"></div></div>
+          <div class="ledger-stat-row" style="margin-top:12px;"><span>Reports</span><strong>1,842</strong></div>
+          <div class="ledger-stat-row"><span>Resolved</span><strong style="color:var(--green);">1,658</strong></div>
+          <div class="ledger-stat-row"><span>Avg Response</span><strong>1.8h</strong></div>
+        </div>
+
+        <div class="ledger-city-card" data-animate data-delay="100">
+          <div class="city-rank">#2</div>
+          <h4>Mumbai</h4>
+          <div class="city-score" style="color: var(--primary);">85</div>
+          <div style="font-size:.8rem; color:var(--slate-light);">Resolution Rate: 85%</div>
+          <div class="city-progress"><div class="city-progress-fill" data-width="85%" style="background: var(--gradient-primary);"></div></div>
+          <div class="ledger-stat-row" style="margin-top:12px;"><span>Reports</span><strong>3,421</strong></div>
+          <div class="ledger-stat-row"><span>Resolved</span><strong style="color:var(--green);">2,908</strong></div>
+          <div class="ledger-stat-row"><span>Avg Response</span><strong>2.1h</strong></div>
+        </div>
+
+        <div class="ledger-city-card" data-animate data-delay="200">
+          <div class="city-rank">#3</div>
+          <h4>Bangalore</h4>
+          <div class="city-score" style="color: var(--primary);">78</div>
+          <div style="font-size:.8rem; color:var(--slate-light);">Resolution Rate: 78%</div>
+          <div class="city-progress"><div class="city-progress-fill" data-width="78%" style="background: var(--gradient-primary);"></div></div>
+          <div class="ledger-stat-row" style="margin-top:12px;"><span>Reports</span><strong>2,956</strong></div>
+          <div class="ledger-stat-row"><span>Resolved</span><strong style="color:var(--green);">2,306</strong></div>
+          <div class="ledger-stat-row"><span>Avg Response</span><strong>2.8h</strong></div>
+        </div>
+
+        <div class="ledger-city-card" data-animate data-delay="300">
+          <div class="city-rank">#4</div>
+          <h4>Delhi</h4>
+          <div class="city-score" style="color: var(--teal);">72</div>
+          <div style="font-size:.8rem; color:var(--slate-light);">Resolution Rate: 72%</div>
+          <div class="city-progress"><div class="city-progress-fill" data-width="72%" style="background: linear-gradient(90deg, var(--teal), var(--teal-light));"></div></div>
+          <div class="ledger-stat-row" style="margin-top:12px;"><span>Reports</span><strong>2,814</strong></div>
+          <div class="ledger-stat-row"><span>Resolved</span><strong style="color:var(--green);">2,026</strong></div>
+          <div class="ledger-stat-row"><span>Avg Response</span><strong>3.4h</strong></div>
+        </div>
+
+        <div class="ledger-city-card" data-animate data-delay="400">
+          <div class="city-rank">#5</div>
+          <h4>Chennai</h4>
+          <div class="city-score" style="color: var(--amber);">65</div>
+          <div style="font-size:.8rem; color:var(--slate-light);">Resolution Rate: 65%</div>
+          <div class="city-progress"><div class="city-progress-fill" data-width="65%" style="background: linear-gradient(90deg, var(--amber), #F97316);"></div></div>
+          <div class="ledger-stat-row" style="margin-top:12px;"><span>Reports</span><strong>1,814</strong></div>
+          <div class="ledger-stat-row"><span>Resolved</span><strong style="color:var(--green);">1,179</strong></div>
+          <div class="ledger-stat-row"><span>Avg Response</span><strong>4.2h</strong></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Citizen Leaderboard -->
+  <section class="section-sm" style="background: #fff;">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag" data-animate>Top Citizens</span>
+        <h2 data-animate data-delay="100">Citizen Leaderboard</h2>
+        <p data-animate data-delay="200">Recognizing the most active civic contributors across all connected cities.</p>
+      </div>
+
+      <div style="max-width: 700px; margin: 0 auto;">
+        <div class="card" style="padding: 0; overflow: hidden;" data-animate data-delay="300">
+          <ul class="leaderboard">
+            <li>
+              <div class="rank">1</div>
+              <div class="user-info"><div class="user-name">Anita Joshi</div><div class="user-city">Mumbai</div></div>
+              <div class="user-points" data-count="2150" data-suffix=" pts">0 pts</div>
+            </li>
+            <li>
+              <div class="rank">2</div>
+              <div class="user-info"><div class="user-name">Vikram Singh</div><div class="user-city">Pune</div></div>
+              <div class="user-points" data-count="1980" data-suffix=" pts">0 pts</div>
+            </li>
+            <li>
+              <div class="rank">3</div>
+              <div class="user-info"><div class="user-name">Deepa Nair</div><div class="user-city">Bangalore</div></div>
+              <div class="user-points" data-count="1820" data-suffix=" pts">0 pts</div>
+            </li>
+            <li>
+              <div class="rank">4</div>
+              <div class="user-info"><div class="user-name">Arjun Mehta</div><div class="user-city">Delhi</div></div>
+              <div class="user-points" data-count="1650" data-suffix=" pts">0 pts</div>
+            </li>
+            <li>
+              <div class="rank">5</div>
+              <div class="user-info"><div class="user-name">Priti Desai</div><div class="user-city">Pune</div></div>
+              <div class="user-points" data-count="1540" data-suffix=" pts">0 pts</div>
+            </li>
+            <li>
+              <div class="rank">6</div>
+              <div class="user-info"><div class="user-name">Ravi Kumar</div><div class="user-city">Chennai</div></div>
+              <div class="user-points" data-count="1420" data-suffix=" pts">0 pts</div>
+            </li>
+            <li>
+              <div class="rank">7</div>
+              <div class="user-info"><div class="user-name">Sneha Patel</div><div class="user-city">Mumbai</div></div>
+              <div class="user-points" data-count="1380" data-suffix=" pts">0 pts</div>
+            </li>
+            <li>
+              <div class="rank">8</div>
+              <div class="user-info"><div class="user-name">Alex Rivera</div><div class="user-city">Mumbai</div></div>
+              <div class="user-points" data-count="1250" data-suffix=" pts">0 pts</div>
+            </li>
+            <li>
+              <div class="rank">9</div>
+              <div class="user-info"><div class="user-name">Kavita Sharma</div><div class="user-city">Delhi</div></div>
+              <div class="user-points" data-count="1180" data-suffix=" pts">0 pts</div>
+            </li>
+            <li>
+              <div class="rank">10</div>
+              <div class="user-info"><div class="user-name">Nikhil Reddy</div><div class="user-city">Bangalore</div></div>
+              <div class="user-points" data-count="1050" data-suffix=" pts">0 pts</div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Recent Resolutions Timeline -->
+  <section class="section">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag" data-animate>Live Feed</span>
+        <h2 data-animate data-delay="100">Recent Resolutions</h2>
+        <p data-animate data-delay="200">A transparent log of recently resolved civic issues across the network.</p>
+      </div>
+
+      <div style="max-width: 700px; margin: 0 auto;">
+        <div class="card" data-animate data-delay="300">
+          <div class="timeline-item">
+            <div class="timeline-dot" style="background: var(--green);"></div>
+            <div class="timeline-info">
+              <h5>Broken Streetlight Fixed — Park Avenue, Mumbai</h5>
+              <p>Resolved in 4.2 hours. Reported by citizen_demo. Municipal team dispatched within 30 min.</p>
+              <span class="badge badge-green" style="margin-top:4px;">Resolved</span>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot" style="background: var(--green);"></div>
+            <div class="timeline-info">
+              <h5>Garbage Cleared — Station Road, Pune</h5>
+              <p>Resolved in 2.1 hours. Community-reported issue with 34 votes. Sanitation crew deployed.</p>
+              <span class="badge badge-green" style="margin-top:4px;">Resolved</span>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot" style="background: var(--green);"></div>
+            <div class="timeline-info">
+              <h5>Pothole Repaired — NH-48, Bangalore</h5>
+              <p>Resolved in 6.5 hours. AI-classified as high severity. Road maintenance team responded.</p>
+              <span class="badge badge-green" style="margin-top:4px;">Resolved</span>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot" style="background: var(--amber);"></div>
+            <div class="timeline-info">
+              <h5>Water Leakage — Sector 14, Mumbai</h5>
+              <p>In progress. Priority score: 94/100. Municipal water department team on-site.</p>
+              <span class="badge badge-amber" style="margin-top:4px;">In Progress</span>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot" style="background: var(--green);"></div>
+            <div class="timeline-info">
+              <h5>Illegal Dumping Cleared — River Road, Chennai</h5>
+              <p>Resolved in 8.3 hours. Environmental team deployed. Area now under monitoring.</p>
+              <span class="badge badge-green" style="margin-top:4px;">Resolved</span>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot" style="background: var(--green);"></div>
+            <div class="timeline-info">
+              <h5>Road Crack Patched — Ring Road, Delhi</h5>
+              <p>Resolved in 5.1 hours. Reported by 12 citizens. Permanent repair scheduled for next week.</p>
+              <span class="badge badge-green" style="margin-top:4px;">Resolved</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-bottom" style="border:none; padding:0;">
+      <span>&copy; 2026 Civic Nili</span>
+      <span>Built with &hearts; for better cities</span>
+    </div>
+  </div>
+</footer>
+
+<script src="/js/app.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // Animate city progress bars
+    const progressBars = document.querySelectorAll('.city-progress-fill');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.style.width = entry.target.dataset.width;
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.3 });
+    progressBars.forEach(b => observer.observe(b));
+  });
+</script>
+</body>
+</html>

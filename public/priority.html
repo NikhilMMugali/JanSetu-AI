@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Priority Engine — Civic Nili</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <style>
+    .gauge-container { display: flex; justify-content: center; gap: 40px; flex-wrap: wrap; margin: 40px 0; }
+    .gauge-wrap { text-align: center; }
+    .gauge-ring {
+      width: 160px; height: 160px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 12px;
+      transition: all 1.5s cubic-bezier(.4,0,.2,1);
+    }
+    .gauge-inner {
+      width: 128px; height: 128px; border-radius: 50%; background: var(--card);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+    }
+    .gauge-val { font-family: 'Space Grotesk'; font-size: 2rem; font-weight: 800; }
+    .gauge-lbl { font-size: .75rem; color: var(--slate-light); }
+    .flow-visual {
+      display: flex; align-items: center; justify-content: center; gap: 0; flex-wrap: wrap;
+      padding: 40px 0;
+    }
+    .flow-node {
+      padding: 16px 24px; border-radius: var(--radius); text-align: center;
+      font-weight: 600; font-size: .85rem; transition: var(--transition);
+      min-width: 140px;
+    }
+    .flow-node:hover { transform: scale(1.05); }
+    .flow-arrow { font-size: 1.5rem; color: var(--slate-light); padding: 0 8px; }
+    .live-issue {
+      background: var(--card); border-radius: var(--radius-lg); padding: 24px;
+      border: 1px solid var(--border); margin-bottom: 16px;
+      display: grid; grid-template-columns: 1fr 200px; gap: 24px; align-items: center;
+      transition: var(--transition);
+    }
+    .live-issue:hover { box-shadow: var(--shadow-lg); border-color: var(--primary); }
+    .score-bar { height: 32px; background: var(--bg); border-radius: 50px; overflow: hidden; position: relative; }
+    .score-bar-fill { height: 100%; border-radius: 50px; display: flex; align-items: center; justify-content: flex-end; padding-right: 12px; color: #fff; font-weight: 700; font-size: .8rem; transition: width 1.5s cubic-bezier(.4,0,.2,1); width: 0; }
+    .particles { position: relative; height: 120px; overflow: hidden; border-radius: var(--radius-lg); background: var(--gradient-hero); margin: 32px 0; }
+    .particle { position: absolute; width: 6px; height: 6px; border-radius: 50%; animation: rise 3s ease-in infinite; }
+    @keyframes rise { 0% { transform: translateY(120px) scale(0); opacity: 0; } 30% { opacity: 1; } 100% { transform: translateY(-20px) scale(1.5); opacity: 0; } }
+  </style>
+</head>
+<body>
+<nav class="navbar">
+  <div class="container">
+    <a href="/" class="nav-brand">Civic<span>Nili</span></a>
+    <ul class="nav-links">
+      <li><a href="/">Home</a></li>
+      <li><a href="/priority">Priority</a></li>
+      <li><a href="/ledger">Ledger</a></li>
+      <li><a href="/login" class="btn btn-sm btn-primary">Login</a></li>
+    </ul>
+    <button class="hamburger" onclick="document.querySelector('.nav-links').classList.toggle('open')"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<div style="padding-top: 100px;">
+  <!-- Hero Section -->
+  <section class="section-sm" style="background: var(--gradient-hero); color: #fff;">
+    <div class="container text-center">
+      <span class="section-tag" style="background: rgba(37,99,235,.2); color: var(--primary-light);" data-animate>Smart Prioritization</span>
+      <h1 style="color:#fff; font-size: 2.8rem; margin: 16px 0;" data-animate data-delay="100">Priority Engine</h1>
+      <p style="color:rgba(255,255,255,.6); max-width:600px; margin:0 auto;" data-animate data-delay="200">Our smart scoring system combines multiple signals to ensure the most critical issues get attention first. No raw math — just intuitive visualization.</p>
+    </div>
+  </section>
+
+  <!-- Scoring Factors -->
+  <section class="section">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag" data-animate>Scoring Factors</span>
+        <h2 data-animate data-delay="100">What Drives Priority?</h2>
+        <p data-animate data-delay="200">Multiple signals are weighted and combined to create a dynamic priority score.</p>
+      </div>
+
+      <div style="max-width: 600px; margin: 0 auto;">
+        <div class="priority-bar-group" data-animate>
+          <div class="priority-bar-label"><span>🔴 AI Severity Assessment</span><span>35%</span></div>
+          <div class="priority-bar"><div class="priority-bar-fill" data-width="35%" style="background: linear-gradient(90deg, var(--red), #F97316);"></div></div>
+        </div>
+        <div class="priority-bar-group" data-animate data-delay="100">
+          <div class="priority-bar-label"><span>🗳️ Community Votes</span><span>25%</span></div>
+          <div class="priority-bar"><div class="priority-bar-fill" data-width="25%" style="background: var(--gradient-primary);"></div></div>
+        </div>
+        <div class="priority-bar-group" data-animate data-delay="200">
+          <div class="priority-bar-label"><span>📍 Location Impact</span><span>20%</span></div>
+          <div class="priority-bar"><div class="priority-bar-fill" data-width="20%" style="background: linear-gradient(90deg, var(--teal), var(--teal-light));"></div></div>
+        </div>
+        <div class="priority-bar-group" data-animate data-delay="300">
+          <div class="priority-bar-label"><span>🕐 Recency</span><span>10%</span></div>
+          <div class="priority-bar"><div class="priority-bar-fill" data-width="10%" style="background: linear-gradient(90deg, var(--amber), var(--amber-light));"></div></div>
+        </div>
+        <div class="priority-bar-group" data-animate data-delay="400">
+          <div class="priority-bar-label"><span>📊 Historical Pattern</span><span>10%</span></div>
+          <div class="priority-bar"><div class="priority-bar-fill" data-width="10%" style="background: linear-gradient(90deg, var(--slate), var(--slate-light));"></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Visual Flow -->
+  <section class="section-sm" style="background:#fff;">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag" data-animate>Visual Flow</span>
+        <h2 data-animate data-delay="100">How Issues Move Through the Pipeline</h2>
+      </div>
+      <div class="flow-visual" data-animate data-delay="200">
+        <div class="flow-node" style="background:rgba(37,99,235,.1); color:var(--primary);">📝 Report</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node" style="background:rgba(13,148,136,.1); color:var(--teal);">🤖 AI Analysis</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node" style="background:rgba(245,158,11,.1); color:var(--amber);">🗳️ Voting</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node" style="background:rgba(239,68,68,.1); color:var(--red);">⚡ Scoring</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node" style="background:rgba(16,185,129,.1); color:var(--green);">✅ Resolution</div>
+      </div>
+
+      <!-- Particle Visualization -->
+      <div class="particles" id="particles" data-animate>
+        <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); text-align:center; color:#fff; z-index:2;">
+          <div style="font-size:.8rem; opacity:.7;">Live Vote Accumulation</div>
+          <div style="font-family:'Space Grotesk'; font-size:2.5rem; font-weight:800;" data-count="847" data-suffix=" votes">0 votes</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Priority In Action -->
+  <section class="section">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag" data-animate>Live Demo</span>
+        <h2 data-animate data-delay="100">Priority in Action</h2>
+        <p data-animate data-delay="200">See how different issues score based on their combined signals.</p>
+      </div>
+
+      <!-- Gauges -->
+      <div class="gauge-container" data-animate>
+        <div class="gauge-wrap">
+          <div class="gauge-ring" style="background: conic-gradient(var(--red) 0deg, var(--red) 338deg, var(--border) 338deg);">
+            <div class="gauge-inner">
+              <div class="gauge-val" style="color:var(--red);" data-count="94">0</div>
+              <div class="gauge-lbl">Score</div>
+            </div>
+          </div>
+          <strong>Water Leakage</strong><br>
+          <span style="font-size:.8rem; color:var(--red);">🔴 Critical</span>
+        </div>
+        <div class="gauge-wrap">
+          <div class="gauge-ring" style="background: conic-gradient(var(--amber) 0deg, var(--amber) 281deg, var(--border) 281deg);">
+            <div class="gauge-inner">
+              <div class="gauge-val" style="color:var(--amber);" data-count="78">0</div>
+              <div class="gauge-lbl">Score</div>
+            </div>
+          </div>
+          <strong>Large Pothole</strong><br>
+          <span style="font-size:.8rem; color:var(--amber);">🟠 High</span>
+        </div>
+        <div class="gauge-wrap">
+          <div class="gauge-ring" style="background: conic-gradient(var(--primary) 0deg, var(--primary) 198deg, var(--border) 198deg);">
+            <div class="gauge-inner">
+              <div class="gauge-val" style="color:var(--primary);" data-count="55">0</div>
+              <div class="gauge-lbl">Score</div>
+            </div>
+          </div>
+          <strong>Garbage Pile</strong><br>
+          <span style="font-size:.8rem; color:var(--primary);">🔵 Medium</span>
+        </div>
+        <div class="gauge-wrap">
+          <div class="gauge-ring" style="background: conic-gradient(var(--teal) 0deg, var(--teal) 108deg, var(--border) 108deg);">
+            <div class="gauge-inner">
+              <div class="gauge-val" style="color:var(--teal);" data-count="30">0</div>
+              <div class="gauge-lbl">Score</div>
+            </div>
+          </div>
+          <strong>Broken Light</strong><br>
+          <span style="font-size:.8rem; color:var(--teal);">🟢 Low</span>
+        </div>
+      </div>
+
+      <!-- Live Issues with Score Bars -->
+      <div style="margin-top: 40px;">
+        <div class="live-issue" data-animate>
+          <div>
+            <h4>💧 Water Pipeline Leakage — Sector 14</h4>
+            <div style="display:flex; gap:8px; margin-top:8px;">
+              <span class="badge badge-red">AI: Critical</span>
+              <span class="badge badge-blue">89 votes</span>
+              <span class="badge badge-teal">High-traffic area</span>
+            </div>
+          </div>
+          <div class="score-bar">
+            <div class="score-bar-fill" data-width="94%" style="background: linear-gradient(90deg, var(--red), #F97316);">94</div>
+          </div>
+        </div>
+        <div class="live-issue" data-animate data-delay="100">
+          <div>
+            <h4>🕳️ Large Pothole — MG Road</h4>
+            <div style="display:flex; gap:8px; margin-top:8px;">
+              <span class="badge badge-amber">AI: High</span>
+              <span class="badge badge-blue">47 votes</span>
+              <span class="badge badge-teal">Main road</span>
+            </div>
+          </div>
+          <div class="score-bar">
+            <div class="score-bar-fill" data-width="78%" style="background: linear-gradient(90deg, var(--amber), #F97316);">78</div>
+          </div>
+        </div>
+        <div class="live-issue" data-animate data-delay="200">
+          <div>
+            <h4>🗑️ Illegal Dumping — River Road</h4>
+            <div style="display:flex; gap:8px; margin-top:8px;">
+              <span class="badge badge-amber">AI: High</span>
+              <span class="badge badge-blue">56 votes</span>
+              <span class="badge badge-slate">Outskirts</span>
+            </div>
+          </div>
+          <div class="score-bar">
+            <div class="score-bar-fill" data-width="72%" style="background: var(--gradient-primary);">72</div>
+          </div>
+        </div>
+        <div class="live-issue" data-animate data-delay="300">
+          <div>
+            <h4>🗑️ Garbage Near Market</h4>
+            <div style="display:flex; gap:8px; margin-top:8px;">
+              <span class="badge badge-blue">AI: Medium</span>
+              <span class="badge badge-blue">23 votes</span>
+              <span class="badge badge-teal">Commercial zone</span>
+            </div>
+          </div>
+          <div class="score-bar">
+            <div class="score-bar-fill" data-width="55%" style="background: linear-gradient(90deg, var(--teal), var(--teal-light));">55</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-bottom" style="border:none; padding:0;">
+      <span>© 2026 Civic Nili</span>
+      <span>Built with ❤️ for better cities</span>
+    </div>
+  </div>
+</footer>
+
+<script src="/js/app.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    initPriorityBars();
+
+    // Animate score bars
+    const scoreBars = document.querySelectorAll('.score-bar-fill');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.style.width = entry.target.dataset.width;
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.3 });
+    scoreBars.forEach(b => observer.observe(b));
+
+    // Create particles
+    const container = document.getElementById('particles');
+    if (container) {
+      const colors = ['#2563EB', '#0D9488', '#F59E0B', '#10B981', '#3B82F6'];
+      for (let i = 0; i < 30; i++) {
+        const p = document.createElement('div');
+        p.className = 'particle';
+        p.style.left = Math.random() * 100 + '%';
+        p.style.background = colors[Math.floor(Math.random() * colors.length)];
+        p.style.animationDelay = Math.random() * 3 + 's';
+        p.style.animationDuration = (2 + Math.random() * 2) + 's';
+        container.appendChild(p);
+      }
+    }
+  });
+</script>
+</body>
+</html>

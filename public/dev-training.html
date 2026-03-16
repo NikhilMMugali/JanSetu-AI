@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Training Data — Civic Nili</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <style>
+    .retrain-btn { position: relative; overflow: hidden; }
+    .retrain-btn .progress-bar { position: absolute; bottom: 0; left: 0; height: 4px; background: rgba(255,255,255,.5); width: 0; transition: width 3s linear; }
+    .retrain-btn.training .progress-bar { width: 100%; }
+  </style>
+</head>
+<body>
+<nav class="navbar">
+  <div class="container">
+    <a href="/dev/dashboard" class="nav-brand">Civic<span>Nili</span></a>
+    <ul class="nav-links">
+      <li><a href="/dev/dashboard">Dashboard</a></li>
+      <li><a href="/dev/training">Training</a></li>
+      <li><a href="/dev/users">Users</a></li>
+      <li><a href="/dev/analytics">Analytics</a></li>
+      <li><a href="#" onclick="logout()" class="btn btn-sm btn-outline">Logout</a></li>
+    </ul>
+    <button class="hamburger" onclick="document.querySelector('.nav-links').classList.toggle('open')"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<div class="dashboard">
+  <aside class="sidebar"><ul class="sidebar-nav" id="sidebar-nav"></ul></aside>
+  <main class="dash-main">
+    <div class="dash-header" data-animate>
+      <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px;">
+        <div>
+          <h1>🧠 Training Data Pipeline</h1>
+          <p>Manage training data from admin reviews and citizen inputs</p>
+        </div>
+        <button class="btn btn-primary btn-lg retrain-btn" id="retrain-btn" onclick="retrainModel()">
+          🔄 Retrain Model
+          <div class="progress-bar"></div>
+        </button>
+      </div>
+    </div>
+
+    <div class="stat-cards">
+      <div class="stat-card" data-animate style="border-left: 4px solid var(--primary);">
+        <div class="sc-label">High Priority Data</div>
+        <div class="sc-value" style="color:var(--primary);" id="hp-count" data-count="23">0</div>
+        <div class="sc-change">From admin reviews</div>
+      </div>
+      <div class="stat-card" data-animate data-delay="100" style="border-left: 4px solid var(--slate-light);">
+        <div class="sc-label">Low Priority Data</div>
+        <div class="sc-value" style="color:var(--slate-light);" data-count="156">0</div>
+        <div class="sc-change">From citizen manual input</div>
+      </div>
+      <div class="stat-card" data-animate data-delay="200" style="border-left: 4px solid var(--green);">
+        <div class="sc-label">Model Version</div>
+        <div class="sc-value" style="color:var(--green); font-size:1.5rem;">v3.2.1</div>
+        <div class="sc-change up">Last trained 2 days ago</div>
+      </div>
+      <div class="stat-card" data-animate data-delay="300" style="border-left: 4px solid var(--teal);">
+        <div class="sc-label">Total Training Samples</div>
+        <div class="sc-value" style="color:var(--teal);" data-count="12847">0</div>
+        <div class="sc-change up">Growing daily</div>
+      </div>
+    </div>
+
+    <!-- Training Data Table -->
+    <h3 style="margin-bottom:16px;" data-animate>High Priority Training Queue (Admin Reviewed)</h3>
+    <div class="card" style="padding:0; overflow:auto;" data-animate data-delay="100">
+      <table class="data-table">
+        <thead>
+          <tr><th>#</th><th>Image</th><th>Classified As</th><th>Source</th><th>Priority</th><th>Date</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>4821</td>
+            <td><img src="https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?w=60&h=40&fit=crop" style="border-radius:4px;"></td>
+            <td><strong>Pothole</strong></td>
+            <td><span class="badge badge-amber">Admin Review</span></td>
+            <td><span class="badge badge-red">High</span></td>
+            <td>Feb 17, 2026</td>
+            <td><span class="badge badge-green">Ready</span></td>
+          </tr>
+          <tr>
+            <td>4819</td>
+            <td><img src="https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?w=60&h=40&fit=crop" style="border-radius:4px;"></td>
+            <td><strong>Garbage</strong></td>
+            <td><span class="badge badge-amber">Admin Review</span></td>
+            <td><span class="badge badge-red">High</span></td>
+            <td>Feb 17, 2026</td>
+            <td><span class="badge badge-green">Ready</span></td>
+          </tr>
+          <tr>
+            <td>4815</td>
+            <td><img src="https://images.unsplash.com/photo-1504309092620-4d0ec726efa4?w=60&h=40&fit=crop" style="border-radius:4px;"></td>
+            <td><strong>Water Leakage</strong></td>
+            <td><span class="badge badge-amber">Admin Review</span></td>
+            <td><span class="badge badge-red">High</span></td>
+            <td>Feb 16, 2026</td>
+            <td><span class="badge badge-green">Ready</span></td>
+          </tr>
+          <tr>
+            <td>4810</td>
+            <td><img src="https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=60&h=40&fit=crop" style="border-radius:4px;"></td>
+            <td><strong>Broken Streetlight</strong></td>
+            <td><span class="badge badge-slate">Citizen Input</span></td>
+            <td><span class="badge badge-blue">Low</span></td>
+            <td>Feb 16, 2026</td>
+            <td><span class="badge badge-green">Ready</span></td>
+          </tr>
+          <tr>
+            <td>4805</td>
+            <td><img src="https://images.unsplash.com/photo-1621955511667-e2c316e4575d?w=60&h=40&fit=crop" style="border-radius:4px;"></td>
+            <td><strong>Road Damage</strong></td>
+            <td><span class="badge badge-amber">Admin Review</span></td>
+            <td><span class="badge badge-red">High</span></td>
+            <td>Feb 15, 2026</td>
+            <td><span class="badge badge-green">Ready</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Model Performance -->
+    <h3 style="margin:32px 0 16px;" data-animate>Model Performance Over Time</h3>
+    <div class="chart-placeholder" style="height:250px;" data-animate data-delay="100">
+      <div class="chart-bar" data-height="70%" style="background:var(--gradient-primary);"><span class="chart-val">87%</span><span class="chart-label">v3.0</span></div>
+      <div class="chart-bar" data-height="78%" style="background:var(--gradient-primary);"><span class="chart-val">90%</span><span class="chart-label">v3.0.5</span></div>
+      <div class="chart-bar" data-height="82%" style="background:var(--gradient-primary);"><span class="chart-val">91%</span><span class="chart-label">v3.1</span></div>
+      <div class="chart-bar" data-height="88%" style="background:var(--gradient-primary);"><span class="chart-val">93%</span><span class="chart-label">v3.1.5</span></div>
+      <div class="chart-bar" data-height="90%" style="background:var(--gradient-primary);"><span class="chart-val">94%</span><span class="chart-label">v3.2</span></div>
+      <div class="chart-bar" data-height="95%" style="background:linear-gradient(135deg, var(--green), var(--teal));"><span class="chart-val">95%</span><span class="chart-label">v3.2.1</span></div>
+    </div>
+  </main>
+</div>
+
+<script src="/js/app.js"></script>
+<script>
+  const session = Session.get();
+  if (!session || session.role !== 'developer') { window.location.href = '/login?role=developer'; }
+  else { document.getElementById('sidebar-nav').innerHTML = getNavHTML('developer', '/dev/training'); }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('hp-count').dataset.count = CivicStore.trainingData;
+    initChartBars();
+  });
+
+  function retrainModel() {
+    const btn = document.getElementById('retrain-btn');
+    if (btn.classList.contains('training')) return;
+    btn.classList.add('training');
+    btn.innerHTML = '⏳ Retraining... <div class="progress-bar"></div>';
+    btn.disabled = true;
+    // Trigger progress bar
+    requestAnimationFrame(() => {
+      btn.querySelector('.progress-bar').style.width = '100%';
+    });
+    setTimeout(() => {
+      btn.classList.remove('training');
+      btn.innerHTML = '✅ Model Retrained! <div class="progress-bar"></div>';
+      btn.style.background = 'linear-gradient(135deg, var(--green), var(--teal))';
+      showToast('Model v3.2.2 trained successfully! Accuracy: 95.8%', 'success');
+      setTimeout(() => {
+        btn.innerHTML = '🔄 Retrain Model <div class="progress-bar"></div>';
+        btn.style.background = '';
+        btn.disabled = false;
+      }, 3000);
+    }, 3000);
+  }
+</script>
+</body>
+</html>

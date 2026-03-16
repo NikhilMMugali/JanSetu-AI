@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Management — Civic Nili</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <style>
+    .user-row { display: flex; align-items: center; gap: 16px; }
+    .user-avatar { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: .8rem; color: #fff; font-weight: 600; }
+    .toggle { position: relative; width: 48px; height: 26px; border-radius: 13px; background: var(--green); cursor: pointer; transition: var(--transition); border: none; }
+    .toggle.off { background: var(--red); }
+    .toggle::after { content: ''; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: #fff; transition: var(--transition); }
+    .toggle.off::after { left: 25px; }
+    .appeal-row { background: rgba(37,99,235,.04); border-top: 1px solid var(--border); }
+    .appeal-row td { padding: 12px 20px !important; font-size: .85rem; }
+    .mini-history { font-size: .75rem; color: var(--slate-light); line-height: 1.6; }
+  </style>
+</head>
+<body>
+<nav class="navbar">
+  <div class="container">
+    <a href="/dev/dashboard" class="nav-brand">Civic<span>Nili</span></a>
+    <ul class="nav-links">
+      <li><a href="/dev/dashboard">Dashboard</a></li>
+      <li><a href="/dev/training">Training</a></li>
+      <li><a href="/dev/users">Users</a></li>
+      <li><a href="/dev/analytics">Analytics</a></li>
+      <li><a href="#" onclick="logout()" class="btn btn-sm btn-outline">Logout</a></li>
+    </ul>
+    <button class="hamburger" onclick="document.querySelector('.nav-links').classList.toggle('open')"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<div class="dashboard">
+  <aside class="sidebar"><ul class="sidebar-nav" id="sidebar-nav"></ul></aside>
+  <main class="dash-main">
+    <div class="dash-header" data-animate>
+      <h1>👥 User Management</h1>
+      <p>Manage citizen accounts, warnings, suspensions, and appeal management</p>
+    </div>
+
+    <div class="stat-cards">
+      <div class="stat-card" data-animate style="border-left: 4px solid var(--primary);">
+        <div class="sc-label">Total Users</div>
+        <div class="sc-value" style="color:var(--primary);" data-count="34219">0</div>
+      </div>
+      <div class="stat-card" data-animate data-delay="100" style="border-left: 4px solid var(--green);">
+        <div class="sc-label">Active Users</div>
+        <div class="sc-value" style="color:var(--green);" data-count="28547">0</div>
+      </div>
+      <div class="stat-card" data-animate data-delay="200" style="border-left: 4px solid var(--amber);">
+        <div class="sc-label">Flagged Users</div>
+        <div class="sc-value" style="color:var(--amber);" id="stat-flagged">0</div>
+      </div>
+      <div class="stat-card" data-animate data-delay="300" style="border-left: 4px solid var(--red);">
+        <div class="sc-label">Suspended</div>
+        <div class="sc-value" style="color:var(--red);" id="stat-suspended">0</div>
+      </div>
+    </div>
+
+    <!-- Pending Appeals Section -->
+    <div id="appeals-section" style="display:none;" data-animate>
+      <div class="card" style="margin-bottom:24px; border-left:4px solid var(--primary);">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
+          <h4>📬 Pending Appeals</h4>
+          <span class="badge badge-blue" id="appeals-count-badge">0 pending</span>
+        </div>
+        <div id="appeals-list"></div>
+      </div>
+    </div>
+
+    <div class="card" style="padding:0; overflow:auto;" data-animate>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>User</th>
+            <th>City</th>
+            <th>Trust Score</th>
+            <th>Points</th>
+            <th>Warnings</th>
+            <th>Status</th>
+            <th>Active</th>
+          </tr>
+        </thead>
+        <tbody id="users-tbody">
+          <!-- Populated by JS -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Warning Detail Modal -->
+    <div id="detail-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:9000; align-items:center; justify-content:center; padding:24px;">
+      <div style="background:var(--card); border-radius:var(--radius-xl); padding:32px; max-width:520px; width:100%; max-height:80vh; overflow-y:auto; position:relative;">
+        <button onclick="document.getElementById('detail-modal').style.display='none';" style="position:absolute; top:16px; right:16px; background:var(--bg); border:none; border-radius:50%; width:32px; height:32px; font-size:1.1rem; cursor:pointer;">✕</button>
+        <h3 id="modal-title" style="margin-bottom:16px;">Warning History</h3>
+        <div id="modal-content"></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="/js/app.js"></script>
+<script>
+  const session = Session.get();
+  if (!session || session.role !== 'developer') { window.location.href = '/login?role=developer'; }
+  else { document.getElementById('sidebar-nav').innerHTML = getNavHTML('developer', '/dev/users'); }
+
+  const typeLabels = { wrong_image: 'Wrong Image', inappropriate: 'Inappropriate Content', false_report: 'False Report' };
+  const avatarColors = {
+    citizen_demo: 'var(--gradient-primary)',
+    warned_user: 'linear-gradient(135deg,var(--amber),#F97316)',
+    flagged_user: 'linear-gradient(135deg,var(--red),var(--red-light))',
+    suspended_user: 'linear-gradient(135deg,#6B7280,#9CA3AF)',
+    admin_demo: 'linear-gradient(135deg,var(--teal),var(--teal-light))',
+    dev_demo: 'linear-gradient(135deg,var(--primary),var(--primary-light))',
+  };
+
+  const citizenUsers = Object.entries(USERS).filter(([,u]) => u.role === 'citizen');
+
+  // Stats
+  let flaggedCount = 0, suspendedCount = 0;
+  citizenUsers.forEach(([uname]) => {
+    const w = CivicStore.getWarnings(uname);
+    if (CivicStore.isSuspended(uname)) suspendedCount++;
+    else if (w.flagged) flaggedCount++;
+  });
+  document.getElementById('stat-flagged').textContent = flaggedCount;
+  document.getElementById('stat-suspended').textContent = suspendedCount;
+
+  // Pending appeals
+  const pendingAppeals = CivicStore.appeals.filter(a => a.status === 'pending');
+  if (pendingAppeals.length > 0) {
+    document.getElementById('appeals-section').style.display = 'block';
+    document.getElementById('appeals-count-badge').textContent = pendingAppeals.length + ' pending';
+    document.getElementById('appeals-list').innerHTML = pendingAppeals.map(a => {
+      const user = USERS[a.username];
+      return `
+        <div style="display:flex; align-items:flex-start; gap:12px; padding:14px; background:var(--bg); border-radius:var(--radius); margin-bottom:8px; flex-wrap:wrap;">
+          <div style="flex:1; min-width:200px;">
+            <strong style="font-size:.9rem;">${user ? user.name : a.username}</strong>
+            <span style="font-size:.8rem; color:var(--slate-light)"> · @${a.username}</span>
+            <p style="font-size:.8rem; color:var(--slate-light); margin-top:4px;">${a.reason.substring(0,150)}${a.reason.length>150?'...':''}</p>
+            <p style="font-size:.75rem; color:var(--slate-light); margin-top:2px;">Submitted ${new Date(a.date).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})}</p>
+          </div>
+          <div style="display:flex; gap:8px; flex-shrink:0;">
+            <button class="btn btn-sm btn-teal" onclick="handleAppeal('${a.id}','${a.username}','approved')">✓ Approve</button>
+            <button class="btn btn-sm btn-red" onclick="handleAppeal('${a.id}','${a.username}','denied')">✗ Deny</button>
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  function handleAppeal(appealId, uname, decision) {
+    const idx = CivicStore.appeals.findIndex(a => a.id == appealId);
+    if (idx > -1) CivicStore.appeals[idx].status = decision;
+    if (decision === 'approved') {
+      CivicStore.restoreUser(uname);
+      showToast(`Appeal approved — ${USERS[uname]?.name || uname} restored`, 'success');
+    } else {
+      showToast(`Appeal denied for ${USERS[uname]?.name || uname}`, 'error');
+    }
+    CivicStore.save();
+    setTimeout(() => location.reload(), 500);
+  }
+
+  // Build user table
+  const tbody = document.getElementById('users-tbody');
+  tbody.innerHTML = citizenUsers.map(([uname, u]) => {
+    const w = CivicStore.getWarnings(uname);
+    const suspended = CivicStore.isSuspended(uname);
+    const initials = u.name.split(' ').map(n => n[0]).join('').slice(0,2).toUpperCase();
+    const trustScore = Math.max(10, 100 - (w.count * 15));
+    const trustColor = trustScore >= 80 ? 'var(--green)' : trustScore >= 50 ? 'var(--amber)' : 'var(--red)';
+    const warningBadge = suspended
+      ? '<span class="badge badge-red">🚫 Suspended</span>'
+      : w.flagged ? `<span class="badge badge-red" style="cursor:pointer;" onclick="showWarningDetail('${uname}')">🚩 ${w.count} warnings</span>`
+      : w.count > 0 ? `<span class="badge badge-amber" style="cursor:pointer;" onclick="showWarningDetail('${uname}')">⚠️ ${w.count} warning${w.count>1?'s':''}</span>`
+      : '<span class="badge badge-green">✅ Clean</span>';
+    const statusBadge = suspended
+      ? '<span class="badge badge-red">Suspended</span>'
+      : w.flagged ? '<span class="badge badge-amber">Flagged</span>'
+      : w.count > 0 ? '<span class="badge badge-amber">Warned</span>'
+      : '<span class="badge badge-green">Active</span>';
+
+    return `
+      <tr id="row-${uname}">
+        <td>
+          <div class="user-row">
+            <div class="user-avatar" style="background:${avatarColors[uname] || 'var(--gradient-primary)'};">${initials}</div>
+            <div><strong>${u.name}</strong><br><span style="font-size:.75rem;color:var(--slate-light);">@${uname}</span></div>
+          </div>
+        </td>
+        <td>${u.city}</td>
+        <td><span style="color:${trustColor}; font-weight:600;">${trustScore}%</span></td>
+        <td>${CivicStore.citizenPoints || 1250}</td>
+        <td>${warningBadge}</td>
+        <td>${statusBadge}</td>
+        <td><button class="toggle ${suspended ? 'off' : ''}" id="toggle-${uname}" onclick="toggleUser('${uname}', this)"></button></td>
+      </tr>`;
+  }).join('');
+
+  function toggleUser(uname, btn) {
+    btn.classList.toggle('off');
+    const statusCell = document.querySelector(`#row-${uname} td:nth-child(6)`);
+    if (btn.classList.contains('off')) {
+      CivicStore.suspendUser(uname, 'Manual suspension by developer admin');
+      statusCell.innerHTML = '<span class="badge badge-red">Suspended</span>';
+      showToast(`${USERS[uname].name} suspended`, 'error');
+    } else {
+      CivicStore.restoreUser(uname);
+      statusCell.innerHTML = '<span class="badge badge-green">Active</span>';
+      showToast(`${USERS[uname].name} restored`, 'success');
+    }
+  }
+
+  function showWarningDetail(uname) {
+    const w = CivicStore.getWarnings(uname);
+    const user = USERS[uname];
+    document.getElementById('modal-title').textContent = `Warning History — ${user?.name || uname}`;
+    if (!w.history || w.history.length === 0) {
+      document.getElementById('modal-content').innerHTML = '<p style="color:var(--slate-light);">No warnings on record.</p>';
+    } else {
+      document.getElementById('modal-content').innerHTML = w.history.map((h, i) => `
+        <div style="padding:12px; ${i < w.history.length-1 ? 'border-bottom:1px solid var(--border);' : ''}">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+            <strong style="font-size:.85rem; color:${h.count >= 3 ? 'var(--red)' : 'var(--amber)'};">Warning ${h.count}/5 · ${typeLabels[h.type] || h.type}</strong>
+            <span style="font-size:.75rem; color:var(--slate-light);">${new Date(h.date).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})}</span>
+          </div>
+          <p style="font-size:.82rem; color:var(--slate-light);">${h.reason}</p>
+        </div>`).join('');
+    }
+    document.getElementById('detail-modal').style.display = 'flex';
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Developer Dashboard — Civic Nili</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+<nav class="navbar">
+  <div class="container">
+    <a href="/dev/dashboard" class="nav-brand">Civic<span>Nili</span></a>
+    <ul class="nav-links">
+      <li><a href="/dev/dashboard">Dashboard</a></li>
+      <li><a href="/dev/training">Training</a></li>
+      <li><a href="/dev/users">Users</a></li>
+      <li><a href="/dev/analytics">Analytics</a></li>
+      <li><a href="#" onclick="logout()" class="btn btn-sm btn-outline">Logout</a></li>
+    </ul>
+    <button class="hamburger" onclick="document.querySelector('.nav-links').classList.toggle('open')"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<div class="dashboard">
+  <aside class="sidebar"><ul class="sidebar-nav" id="sidebar-nav"></ul></aside>
+  <main class="dash-main">
+    <div class="dash-header" data-animate>
+      <h1>⚙️ Developer Dashboard</h1>
+      <p>System health, model performance, and platform analytics</p>
+    </div>
+
+    <div class="stat-cards">
+      <div class="stat-card" data-animate style="border-left: 4px solid var(--green);">
+        <div class="sc-label">System Status</div>
+        <div class="sc-value" style="color: var(--green); font-size: 1.5rem;">● Online</div>
+        <div class="sc-change up">99.97% uptime</div>
+      </div>
+      <div class="stat-card" data-animate data-delay="100" style="border-left: 4px solid var(--primary);">
+        <div class="sc-label">AI Model Accuracy</div>
+        <div class="sc-value" style="color: var(--primary);" data-count="95" data-suffix="%">0%</div>
+        <div class="sc-change up">↑ 2% after last retrain</div>
+      </div>
+      <div class="stat-card" data-animate data-delay="200" style="border-left: 4px solid var(--teal);">
+        <div class="sc-label">Training Data Queue</div>
+        <div class="sc-value" style="color: var(--teal);" id="td-count" data-count="23">0</div>
+        <div class="sc-change">Ready for retrain</div>
+      </div>
+      <div class="stat-card" data-animate data-delay="300" style="border-left: 4px solid var(--amber);">
+        <div class="sc-label">Active Users (24h)</div>
+        <div class="sc-value" style="color: var(--amber);" data-count="1847">0</div>
+        <div class="sc-change up">↑ 12% vs last week</div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap:16px; margin-bottom:32px;">
+      <a href="/dev/training" class="card text-center" data-animate style="cursor:pointer;">
+        <div style="font-size:2rem; margin-bottom:8px;">🧠</div>
+        <h4>Training Data</h4>
+        <p style="font-size:.85rem; color:var(--slate-light);">Review & retrain models</p>
+      </a>
+      <a href="/dev/users" class="card text-center" data-animate data-delay="100" style="cursor:pointer;">
+        <div style="font-size:2rem; margin-bottom:8px;">👥</div>
+        <h4>User Management</h4>
+        <p style="font-size:.85rem; color:var(--slate-light);">Manage users & suspensions</p>
+      </a>
+      <a href="/dev/analytics" class="card text-center" data-animate data-delay="200" style="cursor:pointer;">
+        <div style="font-size:2rem; margin-bottom:8px;">📈</div>
+        <h4>Analytics</h4>
+        <p style="font-size:.85rem; color:var(--slate-light);">System performance metrics</p>
+      </a>
+      <div class="card text-center" data-animate data-delay="300" style="cursor:pointer;" onclick="showToast('API docs opening...','info')">
+        <div style="font-size:2rem; margin-bottom:8px;">📚</div>
+        <h4>API Docs</h4>
+        <p style="font-size:.85rem; color:var(--slate-light);">Developer documentation</p>
+      </div>
+    </div>
+
+    <!-- System Log -->
+    <h3 style="margin-bottom:16px;" data-animate>Recent System Events</h3>
+    <div class="card" style="padding:0; font-family: monospace; font-size:.85rem;" data-animate data-delay="100">
+      <div style="padding:12px 20px; border-bottom:1px solid var(--border); color:var(--green);">[2026-02-17 14:32:01] INFO: AI model v3.2.1 — 95.2% accuracy on test set</div>
+      <div style="padding:12px 20px; border-bottom:1px solid var(--border); color:var(--primary);">[2026-02-17 14:28:15] INFO: New training batch (12 items) added to queue</div>
+      <div style="padding:12px 20px; border-bottom:1px solid var(--border); color:var(--amber);">[2026-02-17 14:15:33] WARN: AI confidence below threshold for report #4821</div>
+      <div style="padding:12px 20px; border-bottom:1px solid var(--border); color:var(--green);">[2026-02-17 13:58:44] INFO: User citizen_user_42 trust score updated: 92%</div>
+      <div style="padding:12px 20px; border-bottom:1px solid var(--border); color:var(--red);">[2026-02-17 13:42:11] ALERT: False report detected — user_567 points decay initiated</div>
+      <div style="padding:12px 20px; color:var(--slate-light);">[2026-02-17 13:30:00] INFO: Scheduled backup completed successfully</div>
+    </div>
+  </main>
+</div>
+
+<script src="/js/app.js"></script>
+<script>
+  const session = Session.get();
+  if (!session || session.role !== 'developer') { window.location.href = '/login?role=developer'; }
+  else { document.getElementById('sidebar-nav').innerHTML = getNavHTML('developer', '/dev/dashboard'); }
+  document.addEventListener('DOMContentLoaded', () => {
+    const td = document.getElementById('td-count');
+    if (td) td.dataset.count = CivicStore.trainingData;
+  });
+</script>
+</body>
+</html>

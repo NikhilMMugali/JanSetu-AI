@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Suspension Appeal — Civic Nili</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <style>
+    .appeal-container { max-width: 680px; margin: 0 auto; }
+    .suspension-detail { display: flex; align-items: center; gap: 12px; padding: 14px 18px; background: rgba(239,68,68,.06); border-radius: var(--radius); border: 1px solid rgba(239,68,68,.2); margin-bottom: 16px; }
+    .char-count { font-size: .8rem; color: var(--slate-light); text-align: right; margin-top: 4px; }
+    .appeal-submitted-card { text-align: center; padding: 48px 32px; background: var(--card); border-radius: var(--radius-xl); border: 2px solid var(--green); }
+    .step-row { display: flex; gap: 16px; align-items: flex-start; padding: 12px 0; border-bottom: 1px solid var(--border); }
+    .step-row:last-child { border-bottom: none; }
+    .step-num { width: 28px; height: 28px; border-radius: 50%; background: var(--gradient-primary); color: #fff; display: flex; align-items: center; justify-content: center; font-size: .8rem; font-weight: 700; flex-shrink: 0; }
+  </style>
+</head>
+<body>
+<nav class="navbar">
+  <div class="container">
+    <a href="/" class="nav-brand">Civic<span>Nili</span></a>
+    <ul class="nav-links">
+      <li><a href="/citizen/dashboard">Dashboard</a></li>
+      <li><a href="#" onclick="logout()" class="btn btn-sm btn-outline">Logout</a></li>
+    </ul>
+    <button class="hamburger" onclick="document.querySelector('.nav-links').classList.toggle('open')"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<div class="dashboard">
+  <aside class="sidebar"><ul class="sidebar-nav" id="sidebar-nav"></ul></aside>
+  <main class="dash-main">
+    <div class="appeal-container">
+
+      <!-- Submitted state (shown after submit) -->
+      <div id="appeal-submitted" style="display:none;" data-animate>
+        <div class="appeal-submitted-card">
+          <div style="font-size:4rem; margin-bottom:16px;">📬</div>
+          <h2 style="color:var(--green); margin-bottom:8px;">Appeal Submitted</h2>
+          <p style="color:var(--slate-light); margin-bottom:24px;">Your appeal has been received and will be reviewed by a city admin within 24–48 hours. You will be notified of the outcome.</p>
+          <div style="background: var(--bg); border-radius: var(--radius); padding: 16px; margin-bottom: 24px; text-align: left;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:8px; font-size:.9rem;">
+              <span style="color:var(--slate-light);">Reference ID</span>
+              <strong id="appeal-ref-id" style="font-family: monospace; color: var(--primary);">—</strong>
+            </div>
+            <div style="display:flex; justify-content:space-between; font-size:.9rem;">
+              <span style="color:var(--slate-light);">Status</span>
+              <span class="badge badge-amber">Pending Review</span>
+            </div>
+          </div>
+          <a href="/" class="btn btn-outline btn-sm">← Back to Home</a>
+        </div>
+      </div>
+
+      <!-- Already submitted appeal -->
+      <div id="already-submitted" style="display:none;" data-animate>
+        <div class="appeal-submitted-card" style="border-color: var(--amber);">
+          <div style="font-size:4rem; margin-bottom:16px;">⏳</div>
+          <h2 style="color:var(--amber); margin-bottom:8px;">Appeal Under Review</h2>
+          <p style="color:var(--slate-light); margin-bottom:24px;">You have already submitted an appeal. It is currently being reviewed by a city admin.</p>
+          <p style="font-size:.85rem; color:var(--slate-light);">Estimated review time: <strong>24–48 hours</strong></p>
+          <div style="margin-top:24px; display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
+            <a href="/" class="btn btn-outline btn-sm">← Back to Home</a>
+            <a href="/citizen/warnings" class="btn btn-amber btn-sm">View Warning History</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Appeal Form -->
+      <div id="appeal-form-section" data-animate>
+        <div class="dash-header">
+          <h1>📋 Submit Suspension Appeal</h1>
+          <p>Your account has been suspended. Submit an appeal to have it reviewed by a city admin.</p>
+        </div>
+
+        <!-- Suspension Details -->
+        <div class="card" style="margin-bottom:24px;">
+          <h4 style="margin-bottom:16px; color: var(--red);">🚫 Suspension Details</h4>
+          <div class="suspension-detail">
+            <span style="font-size:1.1rem;">📅</span>
+            <div>
+              <span style="font-size:.8rem; color:var(--slate-light);">Suspension Date</span>
+              <p style="font-weight:600; font-size:.9rem;" id="susp-date">—</p>
+            </div>
+          </div>
+          <div class="suspension-detail">
+            <span style="font-size:1.1rem;">📋</span>
+            <div>
+              <span style="font-size:.8rem; color:var(--slate-light);">Reason</span>
+              <p style="font-weight:600; font-size:.9rem;" id="susp-reason">—</p>
+            </div>
+          </div>
+          <div class="suspension-detail">
+            <span style="font-size:1.1rem;">⚠️</span>
+            <div>
+              <span style="font-size:.8rem; color:var(--slate-light);">Warnings at Suspension</span>
+              <p style="font-weight:600; font-size:.9rem;" id="susp-warnings">5 / 5</p>
+            </div>
+          </div>
+          <a href="/citizen/warnings" style="font-size:.85rem; color:var(--primary); display:inline-block; margin-top:8px;">View full warning history →</a>
+        </div>
+
+        <!-- Appeal Form -->
+        <div class="card" style="margin-bottom:24px;">
+          <h4 style="margin-bottom:4px;">Write Your Appeal</h4>
+          <p style="font-size:.85rem; color:var(--slate-light); margin-bottom:20px;">Explain why you believe your account suspension should be lifted. Be honest and specific — this goes directly to a human reviewer.</p>
+
+          <div class="form-group">
+            <label>Appeal Reason</label>
+            <select class="form-select" id="appeal-category" style="margin-bottom:12px;">
+              <option value="">— Select a reason —</option>
+              <option value="misclassified">AI misclassified my legitimate civic reports</option>
+              <option value="technical">Technical issue caused incorrect image uploads</option>
+              <option value="learning">I was unaware of the reporting guidelines</option>
+              <option value="wrongful">My account was wrongfully flagged</option>
+              <option value="other">Other reason</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Detailed Explanation <span style="color:var(--red);">*</span></label>
+            <textarea class="form-input" id="appeal-text" rows="6" placeholder="Describe your situation in detail. For example: 'My last 3 reports were genuine civic issues but the AI flagged them incorrectly because...'" maxlength="1000" oninput="updateCharCount()"></textarea>
+            <div class="char-count"><span id="char-count">0</span> / 1000 characters</div>
+          </div>
+
+          <div class="form-group">
+            <label>Commitment</label>
+            <label style="display:flex; align-items:flex-start; gap:10px; font-weight:400; cursor:pointer;">
+              <input type="checkbox" id="commitment-check" style="margin-top:3px; flex-shrink:0;">
+              <span style="font-size:.9rem; color:var(--slate-light);">I understand the Civic Nili reporting guidelines and commit to only submitting genuine civic issues going forward.</span>
+            </label>
+          </div>
+
+          <button class="btn btn-primary btn-lg" style="width:100%; justify-content:center;" onclick="submitAppeal()">
+            📬 Submit Appeal for Review
+          </button>
+        </div>
+
+        <!-- What Happens Next -->
+        <div class="card">
+          <h4 style="margin-bottom:16px;">What Happens Next</h4>
+          <div class="step-row">
+            <div class="step-num">1</div>
+            <div><strong style="font-size:.9rem;">Appeal Received</strong><p style="font-size:.85rem; color:var(--slate-light);">Your appeal is logged and assigned to a city admin for review.</p></div>
+          </div>
+          <div class="step-row">
+            <div class="step-num">2</div>
+            <div><strong style="font-size:.9rem;">Admin Review (24–48 hours)</strong><p style="font-size:.85rem; color:var(--slate-light);">A human reviewer will examine your warning history and your appeal statement.</p></div>
+          </div>
+          <div class="step-row">
+            <div class="step-num">3</div>
+            <div><strong style="font-size:.9rem;">Decision</strong><p style="font-size:.85rem; color:var(--slate-light);">If approved, your account is restored. If denied, you may reapply after 30 days.</p></div>
+          </div>
+          <div class="step-row">
+            <div class="step-num">4</div>
+            <div><strong style="font-size:.9rem;">Restored Access</strong><p style="font-size:.85rem; color:var(--slate-light);">Your account is restored with a final warning. Any further violations will result in permanent suspension.</p></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<script src="/js/app.js"></script>
+<script>
+  const session = Session.get();
+  if (!session || session.role !== 'citizen') { window.location.href = '/login?role=citizen'; }
+  else { document.getElementById('sidebar-nav').innerHTML = getNavHTML('citizen', '/citizen/appeal'); }
+
+  const username = session.username;
+  const suspension = CivicStore.suspensions[username];
+  const w = CivicStore.getWarnings(username);
+
+  // If not actually suspended, redirect to profile
+  if (!CivicStore.isSuspended(username)) {
+    window.location.href = '/citizen/profile';
+  }
+
+  // If appeal already submitted
+  if (suspension && suspension.appealSubmitted) {
+    document.getElementById('appeal-form-section').style.display = 'none';
+    document.getElementById('already-submitted').style.display = 'block';
+  } else {
+    // Populate suspension details
+    if (suspension) {
+      const d = new Date(suspension.date);
+      document.getElementById('susp-date').textContent = d.toLocaleDateString('en-IN', { day:'numeric', month:'long', year:'numeric' }) + ' at ' + d.toLocaleTimeString('en-IN', { hour:'2-digit', minute:'2-digit' });
+      document.getElementById('susp-reason').textContent = suspension.reason || 'Exceeded false report threshold';
+    }
+    document.getElementById('susp-warnings').textContent = `${w.count} / 5`;
+  }
+
+  function updateCharCount() {
+    const len = document.getElementById('appeal-text').value.length;
+    document.getElementById('char-count').textContent = len;
+  }
+
+  function submitAppeal() {
+    const category = document.getElementById('appeal-category').value;
+    const text = document.getElementById('appeal-text').value.trim();
+    const committed = document.getElementById('commitment-check').checked;
+
+    if (!category) { showToast('Please select an appeal reason', 'error'); return; }
+    if (text.length < 50) { showToast('Please write at least 50 characters explaining your situation', 'error'); return; }
+    if (!committed) { showToast('Please confirm your commitment to the reporting guidelines', 'error'); return; }
+
+    const fullReason = `[${category}] ${text}`;
+    const appeal = CivicStore.submitAppeal(username, fullReason);
+
+    document.getElementById('appeal-form-section').style.display = 'none';
+    document.getElementById('appeal-submitted').style.display = 'block';
+    document.getElementById('appeal-ref-id').textContent = 'APL-' + appeal.id.toString().slice(-6);
+
+    showToast('Appeal submitted successfully!', 'success');
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Citizen Dashboard — Civic Nili</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+<nav class="navbar">
+  <div class="container">
+    <a href="/citizen/dashboard" class="nav-brand">Civic<span>Nili</span></a>
+    <ul class="nav-links">
+      <li><a href="/citizen/dashboard">Dashboard</a></li>
+      <li><a href="/citizen/report">Report</a></li>
+      <li><a href="/citizen/voting">Voting</a></li>
+      <li><a href="/citizen/profile">Profile</a></li>
+      <li><a href="/ledger">Ledger</a></li>
+      <li><a href="#" onclick="logout()" class="btn btn-sm btn-outline">Logout</a></li>
+    </ul>
+    <button class="hamburger" onclick="document.querySelector('.nav-links').classList.toggle('open')"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<div class="dashboard">
+  <aside class="sidebar">
+    <ul class="sidebar-nav" id="sidebar-nav"></ul>
+  </aside>
+  <main class="dash-main">
+    <div class="dash-header" data-animate>
+      <h1>Welcome back, <span id="user-name">Citizen</span> 👋</h1>
+      <p>Here's your civic engagement overview</p>
+    </div>
+
+    <!-- Stats -->
+    <div class="stat-cards">
+      <div class="stat-card" data-animate data-delay="0">
+        <div class="sc-label">My Reports</div>
+        <div class="sc-value" style="color: var(--primary);" data-count="7">0</div>
+        <div class="sc-change up">↑ 2 this week</div>
+      </div>
+      <div class="stat-card" data-animate data-delay="100">
+        <div class="sc-label">Points Balance</div>
+        <div class="sc-value" style="color: var(--green);" id="points-display" data-count="1250">0</div>
+        <div class="sc-change up">↑ 150 earned this week</div>
+      </div>
+      <div class="stat-card" data-animate data-delay="200">
+        <div class="sc-label">Trust Score</div>
+        <div class="sc-value" style="color: var(--teal);" data-count="92" data-suffix="%">0%</div>
+        <div class="sc-change up">Excellent standing</div>
+      </div>
+      <div class="stat-card" data-animate data-delay="300">
+        <div class="sc-label">Community Votes</div>
+        <div class="sc-value" style="color: var(--amber);" data-count="34">0</div>
+        <div class="sc-change up">↑ 8 this week</div>
+      </div>
+    </div>
+
+    <!-- Recent Reports -->
+    <h3 style="margin-bottom: 16px;" data-animate>My Recent Reports</h3>
+    <div class="issue-cards" data-animate data-delay="100">
+      <div class="issue-card">
+        <div class="issue-card-img" style="background-image: url('https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?w=400&h=250&fit=crop');">
+          <span class="badge badge-high">High Priority</span>
+        </div>
+        <div class="issue-card-body">
+          <h4>Large Pothole on MG Road</h4>
+          <div class="issue-meta"><span>📍 Sector 21, Mumbai</span><span>🕐 2 hours ago</span></div>
+          <p class="issue-desc">Deep pothole causing traffic hazard near the main intersection.</p>
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span class="badge badge-amber">⏳ In Progress</span>
+            <span style="font-size:.8rem; color: var(--slate-light);">🗳️ 47 votes</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="issue-card">
+        <div class="issue-card-img" style="background-image: url('https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=400&h=250&fit=crop');">
+          <span class="badge badge-resolved">Resolved</span>
+        </div>
+        <div class="issue-card-body">
+          <h4>Broken Streetlight</h4>
+          <div class="issue-meta"><span>📍 Park Avenue, Mumbai</span><span>🕐 3 days ago</span></div>
+          <p class="issue-desc">Streetlight out for over a week near the children's park.</p>
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span class="badge badge-green">✅ Resolved</span>
+            <span style="font-size:.8rem; color: var(--green);">+25 pts</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="issue-card">
+        <div class="issue-card-img" style="background-image: url('https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?w=400&h=250&fit=crop');">
+          <span class="badge badge-medium">Medium Priority</span>
+        </div>
+        <div class="issue-card-body">
+          <h4>Garbage Pile Near Market</h4>
+          <div class="issue-meta"><span>📍 Central Market, Mumbai</span><span>🕐 1 day ago</span></div>
+          <p class="issue-desc">Uncollected garbage pile growing near the vegetable market entrance.</p>
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span class="badge badge-blue">🔍 Under Review</span>
+            <span style="font-size:.8rem; color: var(--slate-light);">🗳️ 23 votes</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Activity Feed -->
+    <h3 style="margin: 32px 0 16px;" data-animate>Recent Activity</h3>
+    <div class="card" data-animate data-delay="100" style="padding: 0;">
+      <div style="padding: 16px 24px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px;">
+        <span style="font-size: 1.2rem;">✅</span>
+        <div style="flex:1;"><strong>Broken Streetlight</strong> was resolved<span style="color:var(--green); font-weight:600;"> +25 pts</span></div>
+        <span style="font-size:.8rem; color:var(--slate-light);">3 days ago</span>
+      </div>
+      <div style="padding: 16px 24px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px;">
+        <span style="font-size: 1.2rem;">🗳️</span>
+        <div style="flex:1;">You voted on <strong>Water Leakage — Sector 14</strong><span style="color:var(--green); font-weight:600;"> +5 pts</span></div>
+        <span style="font-size:.8rem; color:var(--slate-light);">1 day ago</span>
+      </div>
+      <div style="padding: 16px 24px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px;">
+        <span style="font-size: 1.2rem;">📝</span>
+        <div style="flex:1;">You reported <strong>Garbage Pile Near Market</strong><span style="color:var(--green); font-weight:600;"> +10 pts</span></div>
+        <span style="font-size:.8rem; color:var(--slate-light);">1 day ago</span>
+      </div>
+      <div style="padding: 16px 24px; display: flex; align-items: center; gap: 12px;">
+        <span style="font-size: 1.2rem;">📝</span>
+        <div style="flex:1;">You reported <strong>Large Pothole on MG Road</strong><span style="color:var(--green); font-weight:600;"> +10 pts</span></div>
+        <span style="font-size:.8rem; color:var(--slate-light);">2 hours ago</span>
+      </div>
+    </div>
+
+    <div style="margin-top: 32px; text-align: center;" data-animate>
+      <a href="/citizen/report" class="btn btn-primary btn-lg">📝 Report New Issue →</a>
+    </div>
+  </main>
+</div>
+
+<script src="/js/app.js"></script>
+<script>
+  const session = Session.get();
+  if (!session || session.role !== 'citizen') { window.location.href = '/login?role=citizen'; }
+  else {
+    document.getElementById('user-name').textContent = session.name.split(' ')[0];
+    document.getElementById('sidebar-nav').innerHTML = getNavHTML('citizen', '/citizen/dashboard');
+  }
+</script>
+</body>
+</html>

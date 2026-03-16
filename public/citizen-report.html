@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Report Issue — Civic Nili</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+<nav class="navbar">
+  <div class="container">
+    <a href="/citizen/dashboard" class="nav-brand">Civic<span>Nili</span></a>
+    <ul class="nav-links">
+      <li><a href="/citizen/dashboard">Dashboard</a></li>
+      <li><a href="/citizen/report">Report</a></li>
+      <li><a href="/citizen/voting">Voting</a></li>
+      <li><a href="/citizen/profile">Profile</a></li>
+      <li><a href="#" onclick="logout()" class="btn btn-sm btn-outline">Logout</a></li>
+    </ul>
+    <button class="hamburger" onclick="document.querySelector('.nav-links').classList.toggle('open')"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<div class="dashboard">
+  <aside class="sidebar">
+    <ul class="sidebar-nav" id="sidebar-nav"></ul>
+  </aside>
+  <main class="dash-main">
+    <!-- Suspension Banner -->
+    <div id="suspension-banner" style="display:none; background:rgba(239,68,68,.08); border:2px solid var(--red); border-radius:var(--radius-lg); padding:24px; margin-bottom:24px; text-align:center;">
+      <div style="font-size:2rem; margin-bottom:8px;">🚫</div>
+      <h3 style="color:var(--red); margin-bottom:8px;">Account Suspended</h3>
+      <p style="color:var(--slate-light); margin-bottom:16px;">Your account has been suspended due to repeated false reports. You cannot submit new reports.</p>
+      <a href="/citizen/appeal" class="btn btn-red btn-sm">Submit Appeal →</a>
+    </div>
+
+    <div id="report-content">
+      <div class="dash-header" data-animate>
+        <h1>📝 Report an Issue</h1>
+        <p>Upload an image of a civic issue and let our Google Vision AI analyze it</p>
+      </div>
+
+      <!-- Warning Banner -->
+      <div id="warning-banner" style="display:none; background:rgba(245,158,11,.08); border:2px solid var(--amber); border-radius:var(--radius-lg); padding:16px 20px; margin-bottom:24px;">
+        <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+          <span style="font-size:1.5rem;">⚠️</span>
+          <div>
+            <strong style="color:var(--amber);" id="warning-text">Warning: You have received warnings for false reports.</strong>
+            <p style="font-size:.85rem; color:var(--slate-light); margin-top:4px;">Please ensure you only upload images of real civic issues.</p>
+          </div>
+          <a href="/citizen/warnings" class="btn btn-amber btn-sm" style="margin-left:auto;">View History</a>
+        </div>
+      </div>
+
+      <!-- Step 1: Report Form -->
+      <div id="step-report" class="report-form">
+        <div class="card" data-animate>
+          <h3 style="margin-bottom: 4px;">Step 1: Upload Image</h3>
+          <p style="color:var(--slate-light); font-size:.9rem; margin-bottom: 20px;">Take a clear photo of the issue. Our <strong>Google Vision AI</strong> will analyze it automatically.</p>
+
+          <div class="upload-zone" id="upload-zone" onclick="document.getElementById('file-input').click();">
+            <div class="upload-icon">📷</div>
+            <p><strong>Click to upload</strong> or drag and drop</p>
+            <p style="font-size:.8rem; margin-top:4px;">PNG, JPG up to 10MB</p>
+            <input type="file" id="file-input" accept="image/*" style="display:none;" onchange="handleUpload(this)">
+          </div>
+          <div class="upload-preview" id="upload-preview">
+            <img id="preview-img" src="" alt="Preview">
+          </div>
+
+          <div class="form-group" style="margin-top: 20px;">
+            <label>📍 Location</label>
+            <input type="text" class="form-input" id="location" placeholder="e.g. Sector 21, MG Road, Mumbai" value="Sector 21, Mumbai">
+          </div>
+
+          <!-- Optional Manual Input -->
+          <div class="optional-section">
+            <div class="optional-header" onclick="this.nextElementSibling.classList.toggle('open'); this.querySelector('.arrow').textContent = this.nextElementSibling.classList.contains('open') ? '▲' : '▼';">
+              <span>Add Manual Description <span class="tag">Optional</span></span>
+              <span class="arrow">▼</span>
+            </div>
+            <div class="optional-body">
+              <p style="font-size:.8rem; color:var(--slate-light); margin-bottom: 12px;">This is for additional context only. AI will analyze the image independently. Manual input serves as low-priority training data.</p>
+              <div class="form-group">
+                <label>Category (your guess)</label>
+                <select class="form-select" id="manual-category">
+                  <option value="">— Select —</option>
+                  <option>Pothole</option>
+                  <option>Broken Streetlight</option>
+                  <option>Garbage</option>
+                  <option>Water Leakage</option>
+                  <option>Road Damage</option>
+                  <option>Illegal Dumping</option>
+                  <option>Other</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Description</label>
+                <textarea class="form-input" id="manual-desc" rows="3" placeholder="Describe the issue (optional)"></textarea>
+              </div>
+            </div>
+          </div>
+
+          <button class="btn btn-primary btn-lg" style="width:100%; justify-content:center; margin-top: 24px;" id="submit-btn" onclick="submitToAI()">
+            🤖 Analyze with Google Vision AI
+          </button>
+        </div>
+      </div>
+
+      <!-- Step 2: AI Analyzing -->
+      <div id="step-analyzing" style="display:none;">
+        <div class="ai-result" data-animate>
+          <div class="ai-spinner"></div>
+          <h3>Analyzing with Google Vision AI...</h3>
+          <p style="color:var(--slate-light); margin-top: 8px;">Processing your image through Google Cloud Vision API</p>
+          <div style="margin-top: 20px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;">
+            <span class="badge badge-blue">Label Detection</span>
+            <span class="badge badge-teal">Safe Search</span>
+            <span class="badge badge-amber">Civic Classification</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 3a: AI Success -->
+      <div id="step-success" style="display:none;">
+        <div class="ai-result" data-animate style="border: 2px solid var(--green);">
+          <div class="ai-success-icon">✅</div>
+          <h3 style="color: var(--green);">AI Analysis Complete</h3>
+          <p style="margin: 12px 0; font-size: 1.1rem;">Issue classified as: <strong id="ai-category" style="color: var(--primary);"></strong></p>
+          <div style="margin: 8px 0;">
+            <span class="badge badge-green" id="ai-confidence-badge" style="font-size: .85rem; padding: 6px 14px;"></span>
+          </div>
+          <div id="ai-labels-container" style="margin-top: 12px; display:flex; flex-wrap:wrap; gap:6px; justify-content:center;"></div>
+          <p style="color:var(--slate-light); font-size:.9rem; margin: 16px 0 8px;">Your report has been submitted and is now open for community voting.</p>
+          <p style="color:var(--slate-light); font-size:.85rem;">Redirecting to Community Voting...</p>
+          <div style="margin-top: 16px;">
+            <span style="color: var(--green); font-weight:600;">+10 points earned!</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 3b: Low Confidence -->
+      <div id="step-failure" style="display:none;">
+        <div class="ai-result" data-animate style="border: 2px solid var(--amber);">
+          <div class="ai-pending-icon">⏳</div>
+          <h3 style="color: var(--amber);">Queued for Manual Review</h3>
+          <p style="margin: 12px 0;">AI confidence was below 80% threshold. Your report has been queued for manual review by a city official.</p>
+          <div id="failure-confidence-info" style="margin: 12px 0;"></div>
+          <div style="margin: 16px 0;">
+            <span class="badge badge-amber" style="font-size: .9rem; padding: 8px 16px;">Pending Admin Review</span>
+          </div>
+          <p style="color:var(--slate-light); font-size:.9rem;">Estimated review time: <strong>2-4 hours</strong></p>
+          <div style="margin-top: 20px; display: flex; gap: 12px; justify-content: center;">
+            <a href="/citizen/dashboard" class="btn btn-outline btn-sm">← Back to Dashboard</a>
+            <a href="/citizen/report" class="btn btn-primary btn-sm" onclick="resetForm(); return false;">Report Another</a>
+          </div>
+          <div style="margin-top: 16px;">
+            <span style="color: var(--green); font-weight:600;">+10 points earned for reporting!</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 3c: Not a Civic Issue (warning issued) -->
+      <div id="step-warning" style="display:none;">
+        <div class="ai-result" data-animate style="border: 2px solid var(--red);">
+          <div style="font-size:3.5rem; margin-bottom:16px;">⚠️</div>
+          <h3 style="color: var(--red);">Not a Civic Issue</h3>
+          <p style="margin: 12px 0; color:var(--slate-light);" id="warning-reason-text"></p>
+          <div id="warning-count-display" style="margin: 16px 0; padding: 16px; background: rgba(239,68,68,.05); border-radius: var(--radius); border: 1px solid rgba(239,68,68,.2);"></div>
+          <div style="margin-top: 20px; display: flex; gap: 12px; justify-content: center; flex-wrap:wrap;">
+            <a href="/citizen/dashboard" class="btn btn-outline btn-sm">← Back to Dashboard</a>
+            <a href="/citizen/warnings" class="btn btn-red btn-sm">View Warning History</a>
+            <a href="/citizen/report" class="btn btn-primary btn-sm" onclick="resetForm(); return false;">Try Again</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 3d: Inappropriate Content -->
+      <div id="step-inappropriate" style="display:none;">
+        <div class="ai-result" data-animate style="border: 2px solid var(--red);">
+          <div style="font-size:3.5rem; margin-bottom:16px;">🚫</div>
+          <h3 style="color: var(--red);">Inappropriate Content Detected</h3>
+          <p style="margin: 12px 0; color:var(--slate-light);">Google Vision AI's Safe Search detected potentially inappropriate content in your image. This has been logged and a warning has been issued.</p>
+          <div id="inappropriate-count-display" style="margin: 16px 0; padding: 16px; background: rgba(239,68,68,.05); border-radius: var(--radius); border: 1px solid rgba(239,68,68,.2);"></div>
+          <div style="margin-top: 20px; display: flex; gap: 12px; justify-content: center; flex-wrap:wrap;">
+            <a href="/citizen/dashboard" class="btn btn-outline btn-sm">← Back to Dashboard</a>
+            <a href="/citizen/warnings" class="btn btn-red btn-sm">View Warning History</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="/js/app.js"></script>
+<script>
+  const session = Session.get();
+  if (!session || session.role !== 'citizen') { window.location.href = '/login?role=citizen'; }
+  else { document.getElementById('sidebar-nav').innerHTML = getNavHTML('citizen', '/citizen/report'); }
+
+  // Check suspension
+  if (session && CivicStore.isSuspended(session.username)) {
+    document.getElementById('suspension-banner').style.display = 'block';
+    document.getElementById('report-content').style.opacity = '0.4';
+    document.getElementById('report-content').style.pointerEvents = 'none';
+  }
+
+  // Show warning banner if user has warnings
+  if (session) {
+    const w = CivicStore.getWarnings(session.username);
+    if (w.count > 0 && !CivicStore.isSuspended(session.username)) {
+      const bannerEl = document.getElementById('warning-banner');
+      bannerEl.style.display = 'block';
+      const remaining = 5 - w.count;
+      document.getElementById('warning-text').textContent = `Warning: You have ${w.count} warning${w.count > 1 ? 's' : ''}. ${remaining} more false report${remaining !== 1 ? 's' : ''} will result in suspension.`;
+      if (w.flagged) {
+        bannerEl.style.borderColor = 'var(--red)';
+        bannerEl.style.background = 'rgba(239,68,68,.08)';
+      }
+    }
+  }
+
+  let imageUploaded = false;
+  let uploadedBase64 = null;
+
+  function handleUpload(input) {
+    if (input.files && input.files[0]) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        uploadedBase64 = e.target.result;
+        document.getElementById('preview-img').src = e.target.result;
+        document.getElementById('upload-preview').style.display = 'block';
+        document.getElementById('upload-zone').style.display = 'none';
+        imageUploaded = true;
+      };
+      reader.readAsDataURL(input.files[0]);
+    }
+  }
+
+  // Drag and drop
+  const zone = document.getElementById('upload-zone');
+  zone.addEventListener('dragover', e => { e.preventDefault(); zone.style.borderColor = 'var(--primary)'; });
+  zone.addEventListener('dragleave', () => { zone.style.borderColor = ''; });
+  zone.addEventListener('drop', e => {
+    e.preventDefault();
+    zone.style.borderColor = '';
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith('image/')) {
+      document.getElementById('file-input').files = e.dataTransfer.files;
+      handleUpload(document.getElementById('file-input'));
+    }
+  });
+
+  async function submitToAI() {
+    if (CivicStore.isSuspended(session.username)) {
+      showToast('Your account is suspended. Cannot submit reports.', 'error');
+      return;
+    }
+
+    document.getElementById('step-report').style.display = 'none';
+    document.getElementById('step-analyzing').style.display = 'block';
+
+    const location = document.getElementById('location').value || 'Unknown Location';
+
+    // Use real Vision API (falls back to simulation if no API key configured)
+    const result = await analyzeImageWithVisionAPI(uploadedBase64 || '');
+
+    document.getElementById('step-analyzing').style.display = 'none';
+
+    if (result.inappropriate) {
+      const warnings = CivicStore.issueWarning(session.username, 'Inappropriate content detected in uploaded image', 'inappropriate');
+      document.getElementById('step-inappropriate').style.display = 'block';
+      document.getElementById('inappropriate-count-display').innerHTML = getWarningCountHTML(warnings.count);
+      showToast('Warning issued: Inappropriate content detected', 'error');
+      if (CivicStore.isSuspended(session.username)) {
+        setTimeout(() => { window.location.href = '/citizen/appeal'; }, 2500);
+      }
+
+    } else if (result.notCivic) {
+      const reason = result.reason || `Uploaded image does not show a civic issue. AI detected: ${result.detectedAs || 'unrecognized content'}.`;
+      const warnings = CivicStore.issueWarning(session.username, reason, 'wrong_image');
+      document.getElementById('step-warning').style.display = 'block';
+      document.getElementById('warning-reason-text').textContent = reason;
+      document.getElementById('warning-count-display').innerHTML = getWarningCountHTML(warnings.count);
+      showToast(`Warning ${warnings.count}/5 issued. ${5 - warnings.count} remaining before suspension.`, 'error');
+      if (CivicStore.isSuspended(session.username)) {
+        setTimeout(() => { window.location.href = '/citizen/appeal'; }, 2500);
+      }
+
+    } else if (result.success) {
+      document.getElementById('ai-category').textContent = result.category;
+      document.getElementById('ai-confidence-badge').textContent = result.simulated
+        ? 'AI Classified (Demo Mode)'
+        : `Confidence: ${result.confidence}%`;
+      document.getElementById('step-success').style.display = 'block';
+
+      if (result.labels && result.labels.length) {
+        document.getElementById('ai-labels-container').innerHTML =
+          result.labels.map(l => `<span class="badge badge-blue" style="font-size:.75rem;">${l}</span>`).join('');
+      }
+
+      CivicStore.addReport({
+        id: Date.now(),
+        category: result.category,
+        location,
+        status: 'voting',
+        votes: 0,
+        confidence: result.confidence,
+        date: new Date().toISOString()
+      });
+      CivicStore.citizenPoints += 10;
+      CivicStore.save();
+      showToast('AI classified your issue! +10 points', 'success');
+      setTimeout(() => { window.location.href = '/citizen/voting'; }, 2500);
+
+    } else {
+      // Low confidence
+      document.getElementById('step-failure').style.display = 'block';
+      const infoEl = document.getElementById('failure-confidence-info');
+      if (result.confidence) {
+        infoEl.innerHTML = `<span class="badge badge-amber">AI Confidence: ${result.confidence}% (threshold: 80%)</span>`;
+        if (result.labels && result.labels.length) {
+          infoEl.innerHTML += `<p style="font-size:.8rem; color:var(--slate-light); margin-top:8px;">Detected: ${result.labels.join(', ')}</p>`;
+        }
+      }
+      CivicStore.addReport({ id: Date.now(), category: 'Pending Review', location, status: 'pending_review', votes: 0, date: new Date().toISOString() });
+      CivicStore.addPendingReview();
+      CivicStore.citizenPoints += 10;
+      CivicStore.save();
+      showToast('Report queued for admin review. +10 points', 'info');
+    }
+  }
+
+  function getWarningCountHTML(count) {
+    const remaining = 5 - count;
+    const flagged = count >= 3;
+    if (count >= 5) {
+      return `<p style="color:var(--red); font-weight:600; font-size:1rem;">🚫 Account Suspended (${count}/5 warnings)</p><p style="font-size:.85rem; color:var(--slate-light); margin-top:4px;">You can submit an appeal to restore your account.</p>`;
+    }
+    return `<p style="color:${flagged ? 'var(--red)' : 'var(--amber)'}; font-weight:600; font-size:1rem;">${flagged ? '🚩' : '⚠️'} Warning ${count} of 5</p><p style="font-size:.85rem; color:var(--slate-light); margin-top:4px;">${remaining} more false report${remaining !== 1 ? 's' : ''} will result in automatic suspension.</p>`;
+  }
+
+  function resetForm() {
+    ['step-success','step-failure','step-warning','step-inappropriate'].forEach(id => {
+      document.getElementById(id).style.display = 'none';
+    });
+    document.getElementById('step-report').style.display = 'block';
+    document.getElementById('upload-zone').style.display = 'block';
+    document.getElementById('upload-preview').style.display = 'none';
+    imageUploaded = false;
+    uploadedBase64 = null;
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Warning History — Civic Nili</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <style>
+    .warning-item {
+      display: flex; align-items: flex-start; gap: 16px;
+      padding: 18px 0; border-bottom: 1px solid var(--border);
+    }
+    .warning-item:last-child { border-bottom: none; }
+    .warning-icon {
+      width: 44px; height: 44px; border-radius: 50%; display: flex;
+      align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0;
+    }
+    .warning-icon.wrong { background: rgba(245,158,11,.12); }
+    .warning-icon.inappropriate { background: rgba(239,68,68,.12); }
+    .warning-icon.false_report { background: rgba(239,68,68,.12); }
+    .warning-info { flex: 1; }
+    .warning-info h5 { font-size: .95rem; margin-bottom: 4px; }
+    .warning-info .reason { font-size: .85rem; color: var(--slate-light); margin-bottom: 4px; }
+    .warning-info .date { font-size: .78rem; color: var(--slate-light); }
+    .warning-num {
+      font-family: 'Space Grotesk'; font-weight: 800; font-size: 1.4rem;
+      width: 40px; height: 40px; border-radius: 50%; display: flex;
+      align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .warning-num.low { background: rgba(245,158,11,.1); color: var(--amber); }
+    .warning-num.high { background: rgba(239,68,68,.1); color: var(--red); }
+    .status-banner {
+      border-radius: var(--radius-lg); padding: 24px; margin-bottom: 28px;
+      display: flex; align-items: center; gap: 20px;
+    }
+    .status-banner.good { background: rgba(16,185,129,.06); border: 2px solid var(--green); }
+    .status-banner.warned { background: rgba(245,158,11,.06); border: 2px solid var(--amber); }
+    .status-banner.flagged { background: rgba(239,68,68,.06); border: 2px solid var(--red); }
+    .status-banner.suspended { background: rgba(239,68,68,.08); border: 2px solid var(--red); }
+    .progress-track { height: 12px; background: var(--border); border-radius: 50px; overflow: hidden; margin-top: 8px; }
+    .progress-fill { height: 100%; border-radius: 50px; transition: width 1s ease; }
+  </style>
+</head>
+<body>
+<nav class="navbar">
+  <div class="container">
+    <a href="/citizen/dashboard" class="nav-brand">Civic<span>Nili</span></a>
+    <ul class="nav-links">
+      <li><a href="/citizen/dashboard">Dashboard</a></li>
+      <li><a href="/citizen/report">Report</a></li>
+      <li><a href="/citizen/voting">Voting</a></li>
+      <li><a href="/citizen/profile">Profile</a></li>
+      <li><a href="#" onclick="logout()" class="btn btn-sm btn-outline">Logout</a></li>
+    </ul>
+    <button class="hamburger" onclick="document.querySelector('.nav-links').classList.toggle('open')"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<div class="dashboard">
+  <aside class="sidebar"><ul class="sidebar-nav" id="sidebar-nav"></ul></aside>
+  <main class="dash-main">
+    <div class="dash-header" data-animate>
+      <h1>⚠️ Warning History</h1>
+      <p>View your warning record and account standing</p>
+    </div>
+
+    <!-- Status Banner -->
+    <div id="status-banner" class="status-banner" data-animate>
+      <div id="status-icon" style="font-size:2.5rem; flex-shrink:0;"></div>
+      <div style="flex:1;">
+        <h3 id="status-title" style="margin-bottom:4px;"></h3>
+        <p id="status-desc" style="font-size:.9rem; color:var(--slate-light); margin-bottom:12px;"></p>
+        <div id="status-progress-container" style="display:none;">
+          <div style="display:flex; justify-content:space-between; font-size:.8rem; color:var(--slate-light); margin-bottom:4px;">
+            <span>False Reports</span>
+            <span id="progress-label"></span>
+          </div>
+          <div class="progress-track">
+            <div class="progress-fill" id="progress-fill" style="width:0;"></div>
+          </div>
+          <div style="display:flex; justify-content:space-between; font-size:.75rem; color:var(--slate-light); margin-top:4px;">
+            <span>0</span>
+            <span style="color:var(--amber);">Warning at 3</span>
+            <span style="color:var(--red);">Suspended at 5</span>
+          </div>
+        </div>
+      </div>
+      <div id="status-action"></div>
+    </div>
+
+    <!-- Stats Row -->
+    <div class="stat-cards" style="margin-bottom:28px;" data-animate>
+      <div class="stat-card" style="border-left:4px solid var(--red);">
+        <div class="sc-label">Total Warnings</div>
+        <div class="sc-value" style="color:var(--red);" id="stat-warnings">0</div>
+      </div>
+      <div class="stat-card" style="border-left:4px solid var(--amber);">
+        <div class="sc-label">Remaining Before Suspend</div>
+        <div class="sc-value" style="color:var(--amber);" id="stat-remaining">5</div>
+      </div>
+      <div class="stat-card" style="border-left:4px solid var(--primary);">
+        <div class="sc-label">Account Status</div>
+        <div class="sc-value" style="font-size:1.1rem; padding-top:4px;" id="stat-status">—</div>
+      </div>
+    </div>
+
+    <!-- Warning Detail Types -->
+    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px; margin-bottom:28px;" data-animate>
+      <div style="padding:20px; background:var(--card); border-radius:var(--radius-lg); border:1px solid var(--border); text-align:center;">
+        <div style="font-size:1.8rem; margin-bottom:8px;">🖼️</div>
+        <div style="font-weight:600; font-size:.9rem;" id="count-wrong_image">0</div>
+        <div style="font-size:.78rem; color:var(--slate-light);">Wrong Image</div>
+      </div>
+      <div style="padding:20px; background:var(--card); border-radius:var(--radius-lg); border:1px solid var(--border); text-align:center;">
+        <div style="font-size:1.8rem; margin-bottom:8px;">🚫</div>
+        <div style="font-weight:600; font-size:.9rem;" id="count-inappropriate">0</div>
+        <div style="font-size:.78rem; color:var(--slate-light);">Inappropriate</div>
+      </div>
+      <div style="padding:20px; background:var(--card); border-radius:var(--radius-lg); border:1px solid var(--border); text-align:center;">
+        <div style="font-size:1.8rem; margin-bottom:8px;">📋</div>
+        <div style="font-weight:600; font-size:.9rem;" id="count-false_report">0</div>
+        <div style="font-size:.78rem; color:var(--slate-light);">False Report</div>
+      </div>
+    </div>
+
+    <!-- Warning History List -->
+    <div class="card" data-animate>
+      <h4 style="margin-bottom:16px;">Warning Details</h4>
+      <div id="warnings-list">
+        <div style="text-align:center; padding:40px; color:var(--slate-light);">
+          <div style="font-size:3rem; margin-bottom:12px;">✅</div>
+          <p>No warnings on your record. Keep up the good work!</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- What Triggers Warnings -->
+    <div class="card" data-animate style="margin-top:24px;">
+      <h4 style="margin-bottom:16px;">How the Warning System Works</h4>
+      <div style="display:flex; flex-direction:column; gap:12px;">
+        <div style="display:flex; gap:12px; padding:12px; background:rgba(16,185,129,.04); border-radius:var(--radius); border:1px solid rgba(16,185,129,.15);">
+          <span style="font-size:1.2rem;">✅</span>
+          <div><strong style="font-size:.9rem;">0 Warnings</strong> — Good standing. Report freely.</div>
+        </div>
+        <div style="display:flex; gap:12px; padding:12px; background:rgba(245,158,11,.04); border-radius:var(--radius); border:1px solid rgba(245,158,11,.15);">
+          <span style="font-size:1.2rem;">⚠️</span>
+          <div><strong style="font-size:.9rem;">1–2 Warnings</strong> — Caution. Review what makes a valid civic report.</div>
+        </div>
+        <div style="display:flex; gap:12px; padding:12px; background:rgba(239,68,68,.04); border-radius:var(--radius); border:1px solid rgba(239,68,68,.15);">
+          <span style="font-size:1.2rem;">🚩</span>
+          <div><strong style="font-size:.9rem;">3–4 Warnings (Flagged)</strong> — Account flagged. Admin is monitoring your activity.</div>
+        </div>
+        <div style="display:flex; gap:12px; padding:12px; background:rgba(239,68,68,.06); border-radius:var(--radius); border:1px solid rgba(239,68,68,.2);">
+          <span style="font-size:1.2rem;">🚫</span>
+          <div><strong style="font-size:.9rem;">5 Warnings (Suspended)</strong> — Account suspended. Submit an appeal for review.</div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="/js/app.js"></script>
+<script>
+  const session = Session.get();
+  if (!session || session.role !== 'citizen') { window.location.href = '/login?role=citizen'; }
+  else { document.getElementById('sidebar-nav').innerHTML = getNavHTML('citizen', '/citizen/warnings'); }
+
+  const username = session.username;
+  const w = CivicStore.getWarnings(username);
+  const suspended = CivicStore.isSuspended(username);
+  const suspension = CivicStore.suspensions[username];
+
+  // Update stat cards
+  document.getElementById('stat-warnings').textContent = w.count;
+  document.getElementById('stat-remaining').textContent = Math.max(0, 5 - w.count);
+
+  // Warning type counts
+  const typeCounts = { wrong_image: 0, inappropriate: 0, false_report: 0 };
+  (w.history || []).forEach(h => { if (typeCounts[h.type] !== undefined) typeCounts[h.type]++; });
+  document.getElementById('count-wrong_image').textContent = typeCounts.wrong_image;
+  document.getElementById('count-inappropriate').textContent = typeCounts.inappropriate;
+  document.getElementById('count-false_report').textContent = typeCounts.false_report;
+
+  // Status banner
+  const banner = document.getElementById('status-banner');
+  const icon = document.getElementById('status-icon');
+  const title = document.getElementById('status-title');
+  const desc = document.getElementById('status-desc');
+  const action = document.getElementById('status-action');
+  const statStatus = document.getElementById('stat-status');
+
+  if (suspended) {
+    banner.className = 'status-banner suspended';
+    icon.textContent = '🚫';
+    title.textContent = 'Account Suspended';
+    desc.textContent = `Reason: ${suspension?.reason || 'Exceeded false report threshold'}`;
+    action.innerHTML = '<a href="/citizen/appeal" class="btn btn-red btn-sm">Submit Appeal →</a>';
+    statStatus.innerHTML = '<span class="badge badge-red">Suspended</span>';
+  } else if (w.flagged) {
+    banner.className = 'status-banner flagged';
+    icon.textContent = '🚩';
+    title.textContent = 'Account Flagged';
+    desc.textContent = `You have ${w.count} warnings. 1 more false report will result in account suspension.`;
+    document.getElementById('status-progress-container').style.display = 'block';
+    document.getElementById('progress-label').textContent = `${w.count}/5`;
+    setTimeout(() => { document.getElementById('progress-fill').style.width = (w.count / 5 * 100) + '%'; document.getElementById('progress-fill').style.background = 'linear-gradient(90deg, var(--amber), var(--red))'; }, 300);
+    statStatus.innerHTML = '<span class="badge badge-red">Flagged</span>';
+  } else if (w.count > 0) {
+    banner.className = 'status-banner warned';
+    icon.textContent = '⚠️';
+    title.textContent = `${w.count} Warning${w.count > 1 ? 's' : ''} on Record`;
+    desc.textContent = `You have ${5 - w.count} more warnings before suspension. Please only upload real civic issues.`;
+    document.getElementById('status-progress-container').style.display = 'block';
+    document.getElementById('progress-label').textContent = `${w.count}/5`;
+    setTimeout(() => { document.getElementById('progress-fill').style.width = (w.count / 5 * 100) + '%'; document.getElementById('progress-fill').style.background = 'var(--amber)'; }, 300);
+    statStatus.innerHTML = '<span class="badge badge-amber">Warned</span>';
+  } else {
+    banner.className = 'status-banner good';
+    icon.textContent = '✅';
+    title.textContent = 'Account in Good Standing';
+    desc.textContent = 'No warnings on your record. Keep reporting valid civic issues!';
+    statStatus.innerHTML = '<span class="badge badge-green">Good Standing</span>';
+  }
+
+  // Warning history list
+  const listEl = document.getElementById('warnings-list');
+  if (w.history && w.history.length > 0) {
+    const typeIcons = { wrong_image: '🖼️', inappropriate: '🚫', false_report: '📋' };
+    const typeLabels = { wrong_image: 'Wrong Image', inappropriate: 'Inappropriate Content', false_report: 'False Report' };
+    listEl.innerHTML = w.history.map(h => {
+      const d = new Date(h.date);
+      const dateStr = d.toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' }) + ' at ' + d.toLocaleTimeString('en-IN', { hour:'2-digit', minute:'2-digit' });
+      const numClass = h.count >= 3 ? 'high' : 'low';
+      return `
+        <div class="warning-item">
+          <div class="warning-icon ${h.type}">
+            ${typeIcons[h.type] || '⚠️'}
+          </div>
+          <div class="warning-info">
+            <h5>${typeLabels[h.type] || 'Warning'}</h5>
+            <p class="reason">${h.reason}</p>
+            <p class="date">🕐 ${dateStr}</p>
+          </div>
+          <div class="warning-num ${numClass}">${h.count}</div>
+        </div>`;
+    }).join('');
+  }
+</script>
+</body>
+</html>

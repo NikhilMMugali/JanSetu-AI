@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Profile — Civic Nili</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <style>
+    .profile-header-card { display: flex; gap: 32px; align-items: center; padding: 32px; background: var(--card); border-radius: var(--radius-xl); border: 1px solid var(--border); margin-bottom: 32px; }
+    .profile-avatar { width: 100px; height: 100px; border-radius: 50%; background: var(--gradient-primary); display: flex; align-items: center; justify-content: center; font-size: 2.5rem; color: #fff; flex-shrink: 0; }
+    .profile-info h2 { margin-bottom: 4px; }
+    .profile-info p { color: var(--slate-light); font-size: .9rem; }
+    .profile-badges { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+    .points-ring { width: 160px; height: 160px; border-radius: 50%; background: conic-gradient(var(--green) 0deg, var(--green) calc(var(--pct) * 3.6deg), var(--border) calc(var(--pct) * 3.6deg)); display: flex; align-items: center; justify-content: center; margin: 0 auto; }
+    .points-ring-inner { width: 130px; height: 130px; border-radius: 50%; background: var(--card); display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    .points-ring-inner .val { font-family: 'Space Grotesk'; font-size: 2rem; font-weight: 800; color: var(--green); }
+    .points-ring-inner .lbl { font-size: .75rem; color: var(--slate-light); }
+    .history-item { display: flex; align-items: center; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--border); }
+    .history-item:last-child { border-bottom: none; }
+    .history-icon { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
+    .history-info { flex: 1; }
+    .history-info h5 { font-size: .9rem; margin-bottom: 2px; }
+    .history-info p { font-size: .8rem; color: var(--slate-light); }
+    .history-pts { font-family: 'Space Grotesk'; font-weight: 700; font-size: .9rem; }
+    .decay-bar { height: 8px; background: var(--border); border-radius: 50px; overflow: hidden; margin-top: 8px; }
+    .decay-bar-fill { height: 100%; border-radius: 50px; background: linear-gradient(90deg, var(--red), var(--amber)); transition: width 2s ease; width: 0; }
+    .warning-link-card { display:flex; align-items:center; justify-content:space-between; padding:16px 20px; border-radius:var(--radius); border:2px solid; margin-bottom:12px; }
+    @media(max-width:768px) { .profile-header-card { flex-direction: column; text-align: center; } .profile-badges { justify-content: center; } }
+  </style>
+</head>
+<body>
+<nav class="navbar">
+  <div class="container">
+    <a href="/citizen/dashboard" class="nav-brand">Civic<span>Nili</span></a>
+    <ul class="nav-links">
+      <li><a href="/citizen/dashboard">Dashboard</a></li>
+      <li><a href="/citizen/report">Report</a></li>
+      <li><a href="/citizen/voting">Voting</a></li>
+      <li><a href="/citizen/profile">Profile</a></li>
+      <li><a href="#" onclick="logout()" class="btn btn-sm btn-outline">Logout</a></li>
+    </ul>
+    <button class="hamburger" onclick="document.querySelector('.nav-links').classList.toggle('open')"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<div class="dashboard">
+  <aside class="sidebar"><ul class="sidebar-nav" id="sidebar-nav"></ul></aside>
+  <main class="dash-main">
+    <!-- Profile Header -->
+    <div class="profile-header-card" data-animate>
+      <div class="profile-avatar" id="profile-initials">AR</div>
+      <div class="profile-info">
+        <h2 id="profile-name">Alex Rivera</h2>
+        <p>📍 <span id="profile-city">Mumbai</span>, Maharashtra • Member since Jan 2025</p>
+        <div class="profile-badges" id="profile-badges">
+          <span class="badge badge-green">✅ Verified Citizen</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Suspension Notice -->
+    <div id="suspension-notice" style="display:none; background:rgba(239,68,68,.08); border:2px solid var(--red); border-radius:var(--radius-lg); padding:24px; margin-bottom:28px;">
+      <div style="display:flex; align-items:center; gap:16px; flex-wrap:wrap;">
+        <span style="font-size:2.5rem;">🚫</span>
+        <div style="flex:1;">
+          <h3 style="color:var(--red); margin-bottom:4px;">Account Suspended</h3>
+          <p style="font-size:.9rem; color:var(--slate-light);" id="suspension-reason-text">—</p>
+        </div>
+        <a href="/citizen/appeal" class="btn btn-red btn-sm">Submit Appeal →</a>
+      </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; margin-bottom: 32px;">
+      <!-- Points -->
+      <div class="card text-center" data-animate>
+        <h4 style="margin-bottom: 16px;">Points Balance</h4>
+        <div class="points-ring" id="points-ring" style="--pct: 83;">
+          <div class="points-ring-inner">
+            <div class="val" id="points-val" data-count="1250">0</div>
+            <div class="lbl">Points</div>
+          </div>
+        </div>
+        <p style="margin-top: 12px; font-size: .85rem; color: var(--slate-light);">Top 17% of citizens</p>
+      </div>
+
+      <!-- Trust Score -->
+      <div class="card text-center" data-animate data-delay="100">
+        <h4 style="margin-bottom: 16px;">Trust Score</h4>
+        <div class="points-ring" id="trust-ring" style="--pct: 92; background: conic-gradient(var(--teal) 0deg, var(--teal) calc(92 * 3.6deg), var(--border) calc(92 * 3.6deg));">
+          <div class="points-ring-inner">
+            <div class="val" style="color: var(--teal);" id="trust-val" data-count="92" data-suffix="%">0%</div>
+            <div class="lbl">Trust</div>
+          </div>
+        </div>
+        <p style="margin-top: 12px; font-size: .85rem; font-weight: 600;" id="trust-label" style="color: var(--teal);">Excellent</p>
+      </div>
+
+      <!-- Stats -->
+      <div class="card" data-animate data-delay="200">
+        <h4 style="margin-bottom: 16px;">My Stats</h4>
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+          <div style="display: flex; justify-content: space-between;">
+            <span style="color: var(--slate-light); font-size: .9rem;">Reports Filed</span>
+            <strong>7</strong>
+          </div>
+          <div style="display: flex; justify-content: space-between;">
+            <span style="color: var(--slate-light); font-size: .9rem;">Resolved</span>
+            <strong style="color: var(--green);">5</strong>
+          </div>
+          <div style="display: flex; justify-content: space-between;">
+            <span style="color: var(--slate-light); font-size: .9rem;">Votes Cast</span>
+            <strong>34</strong>
+          </div>
+          <div style="display: flex; justify-content: space-between;">
+            <span style="color: var(--slate-light); font-size: .9rem;">False Reports</span>
+            <strong id="false-reports-count" style="color: var(--green);">0</strong>
+          </div>
+          <div style="display: flex; justify-content: space-between;">
+            <span style="color: var(--slate-light); font-size: .9rem;">Rank</span>
+            <strong style="color: var(--primary);">#142</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Warning Status Card -->
+    <div class="card" data-animate style="margin-bottom: 24px;">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; flex-wrap:wrap; gap:12px;">
+        <h4>Account Standing & Warning History</h4>
+        <a href="/citizen/warnings" class="btn btn-sm btn-outline" style="font-size:.8rem;">View Full History →</a>
+      </div>
+
+      <!-- Dynamic warning status -->
+      <div id="warning-status-area">
+        <!-- Filled by JS -->
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-top:16px;">
+        <div style="padding: 16px; background: rgba(16,185,129,.05); border-radius: var(--radius); text-align: center;" id="tier-good">
+          <div style="font-size: 1.5rem; margin-bottom: 4px;">✅</div>
+          <div style="font-size: .85rem; font-weight: 600; color: var(--green);">Good Standing</div>
+          <div style="font-size: .75rem; color: var(--slate-light);">0–2 false reports</div>
+        </div>
+        <div style="padding: 16px; background: rgba(245,158,11,.05); border-radius: var(--radius); text-align: center;" id="tier-flagged">
+          <div style="font-size: 1.5rem; margin-bottom: 4px;">🚩</div>
+          <div style="font-size: .85rem; font-weight: 600; color: var(--amber);">Flagged</div>
+          <div style="font-size: .75rem; color: var(--slate-light);">3–4 false reports</div>
+          <div class="decay-bar" style="margin-top:8px;"><div class="decay-bar-fill" id="flagged-bar" style="width:0%;"></div></div>
+        </div>
+        <div style="padding: 16px; background: rgba(239,68,68,.05); border-radius: var(--radius); text-align: center;" id="tier-suspended">
+          <div style="font-size: 1.5rem; margin-bottom: 4px;">🚫</div>
+          <div style="font-size: .85rem; font-weight: 600; color: var(--red);">Suspended</div>
+          <div style="font-size: .75rem; color: var(--slate-light);">5 false reports</div>
+          <div class="decay-bar" style="margin-top:8px;"><div class="decay-bar-fill" id="suspended-bar" style="width:0%;"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- History -->
+    <div class="card" data-animate>
+      <h4 style="margin-bottom: 16px;">Contribution History</h4>
+      <div class="history-item">
+        <div class="history-icon" style="background: rgba(16,185,129,.1);">📝</div>
+        <div class="history-info"><h5>Reported: Large Pothole on MG Road</h5><p>Sector 21, Mumbai • 2 hours ago</p></div>
+        <div class="history-pts" style="color: var(--green);">+10</div>
+      </div>
+      <div class="history-item">
+        <div class="history-icon" style="background: rgba(37,99,235,.1);">🗳️</div>
+        <div class="history-info"><h5>Voted on: Water Pipeline Leakage</h5><p>Sector 14, Mumbai • 5 hours ago</p></div>
+        <div class="history-pts" style="color: var(--green);">+5</div>
+      </div>
+      <div class="history-item">
+        <div class="history-icon" style="background: rgba(16,185,129,.1);">📝</div>
+        <div class="history-info"><h5>Reported: Garbage Pile Near Market</h5><p>Central Market, Mumbai • 1 day ago</p></div>
+        <div class="history-pts" style="color: var(--green);">+10</div>
+      </div>
+      <div class="history-item">
+        <div class="history-icon" style="background: rgba(13,148,136,.1);">✅</div>
+        <div class="history-info"><h5>Resolved: Broken Streetlight</h5><p>Park Avenue, Mumbai • 3 days ago</p></div>
+        <div class="history-pts" style="color: var(--green);">+25</div>
+      </div>
+      <div class="history-item">
+        <div class="history-icon" style="background: rgba(37,99,235,.1);">🗳️</div>
+        <div class="history-info"><h5>Voted on: Cracked Road Surface</h5><p>Ring Road, Bangalore • 4 days ago</p></div>
+        <div class="history-pts" style="color: var(--green);">+5</div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="/js/app.js"></script>
+<script>
+  const session = Session.get();
+  if (!session || session.role !== 'citizen') { window.location.href = '/login?role=citizen'; }
+  else {
+    document.getElementById('sidebar-nav').innerHTML = getNavHTML('citizen', '/citizen/profile');
+    document.getElementById('profile-name').textContent = session.name;
+    const initials = session.name.split(' ').map(n => n[0]).join('').slice(0,2).toUpperCase();
+    document.getElementById('profile-initials').textContent = initials;
+  }
+
+  const username = session.username;
+  const w = CivicStore.getWarnings(username);
+  const suspended = CivicStore.isSuspended(username);
+  const suspension = CivicStore.suspensions[username];
+  const warningCount = w.count;
+
+  // Update false reports count
+  document.getElementById('false-reports-count').textContent = warningCount;
+  if (warningCount > 0) document.getElementById('false-reports-count').style.color = warningCount >= 3 ? 'var(--red)' : 'var(--amber)';
+
+  // Profile badges
+  const badgesEl = document.getElementById('profile-badges');
+  badgesEl.innerHTML = '<span class="badge badge-green">✅ Verified Citizen</span>';
+  if (suspended) {
+    badgesEl.innerHTML += ' <span class="badge badge-red">🚫 Suspended</span>';
+  } else if (w.flagged) {
+    badgesEl.innerHTML += ' <span class="badge badge-red">🚩 Flagged (' + warningCount + ' warnings)</span>';
+  } else if (warningCount > 0) {
+    badgesEl.innerHTML += ' <span class="badge badge-amber">⚠️ ' + warningCount + ' Warning' + (warningCount > 1 ? 's' : '') + '</span>';
+  } else {
+    badgesEl.innerHTML += ' <span class="badge badge-blue">🏆 Top Reporter</span> <span class="badge badge-teal">🗳️ Active Voter</span>';
+  }
+
+  // Suspension notice
+  if (suspended && suspension) {
+    document.getElementById('suspension-notice').style.display = 'block';
+    document.getElementById('suspension-reason-text').textContent = suspension.reason;
+    // Mute points ring
+    document.getElementById('points-ring').style.opacity = '0.5';
+    document.getElementById('trust-ring').style.opacity = '0.5';
+  }
+
+  // Trust score based on warnings
+  const trustScore = Math.max(10, 100 - (warningCount * 15));
+  const trustColor = trustScore >= 80 ? 'var(--teal)' : trustScore >= 50 ? 'var(--amber)' : 'var(--red)';
+  const trustRing = document.getElementById('trust-ring');
+  trustRing.style.background = `conic-gradient(${trustColor} 0deg, ${trustColor} calc(${trustScore} * 3.6deg), var(--border) calc(${trustScore} * 3.6deg))`;
+  const trustValEl = document.getElementById('trust-val');
+  trustValEl.setAttribute('data-count', trustScore);
+  trustValEl.style.color = trustColor;
+  const trustLabels = { 80: 'Excellent', 60: 'Good', 40: 'Fair', 0: 'Poor' };
+  let trustLabel = 'Poor';
+  for (const [threshold, label] of Object.entries(trustLabels).sort((a,b) => b[0]-a[0])) {
+    if (trustScore >= threshold) { trustLabel = label; break; }
+  }
+  const trustLabelEl = document.getElementById('trust-label');
+  trustLabelEl.textContent = trustLabel;
+  trustLabelEl.style.color = trustColor;
+
+  // Warning status area
+  const statusArea = document.getElementById('warning-status-area');
+  if (suspended) {
+    statusArea.innerHTML = `
+      <div style="display:flex; align-items:center; gap:12px; padding:16px; background:rgba(239,68,68,.06); border-radius:var(--radius); border:1px solid rgba(239,68,68,.2);">
+        <span style="font-size:1.5rem;">🚫</span>
+        <div style="flex:1;"><strong style="color:var(--red);">Account Suspended</strong><p style="font-size:.85rem; color:var(--slate-light); margin-top:2px;">You cannot submit new reports until your appeal is reviewed.</p></div>
+        <a href="/citizen/appeal" class="btn btn-red btn-sm">Appeal</a>
+      </div>`;
+    // Highlight suspended tier
+    document.getElementById('tier-suspended').style.border = '2px solid var(--red)';
+    document.getElementById('tier-suspended').style.background = 'rgba(239,68,68,.1)';
+    setTimeout(() => { document.getElementById('suspended-bar').style.width = '100%'; }, 500);
+  } else if (w.flagged) {
+    statusArea.innerHTML = `
+      <div style="display:flex; align-items:center; gap:12px; padding:16px; background:rgba(239,68,68,.04); border-radius:var(--radius); border:1px solid rgba(239,68,68,.15);">
+        <span style="font-size:1.5rem;">🚩</span>
+        <div style="flex:1;"><strong style="color:var(--red);">Account Flagged — ${warningCount} of 5 Warnings</strong><p style="font-size:.85rem; color:var(--slate-light); margin-top:2px;">${5-warningCount} more false report${5-warningCount!==1?'s':''} will result in automatic suspension.</p></div>
+        <a href="/citizen/warnings" class="btn btn-sm btn-outline" style="font-size:.8rem;">View</a>
+      </div>`;
+    document.getElementById('tier-flagged').style.border = '2px solid var(--red)';
+    document.getElementById('tier-flagged').style.background = 'rgba(239,68,68,.1)';
+    setTimeout(() => { document.getElementById('flagged-bar').style.width = ((warningCount-3)/2*100)+'%'; }, 500);
+  } else if (warningCount > 0) {
+    statusArea.innerHTML = `
+      <div style="display:flex; align-items:center; gap:12px; padding:16px; background:rgba(245,158,11,.05); border-radius:var(--radius); border:1px solid rgba(245,158,11,.2);">
+        <span style="font-size:1.5rem;">⚠️</span>
+        <div style="flex:1;"><strong style="color:var(--amber);">${warningCount} Warning${warningCount>1?'s':''} — Be Careful</strong><p style="font-size:.85rem; color:var(--slate-light); margin-top:2px;">Only upload genuine civic issues. ${5-warningCount} more warnings lead to suspension.</p></div>
+        <a href="/citizen/warnings" class="btn btn-sm btn-outline" style="font-size:.8rem;">View</a>
+      </div>`;
+  } else {
+    statusArea.innerHTML = `
+      <div style="display:flex; align-items:center; gap:12px; padding:12px; background:rgba(16,185,129,.05); border-radius:var(--radius); border:1px solid rgba(16,185,129,.15);">
+        <span style="font-size:1.3rem;">✅</span>
+        <div><strong style="color:var(--green); font-size:.9rem;">Good Standing</strong><p style="font-size:.85rem; color:var(--slate-light); margin-top:2px;">No warnings on your record. Keep reporting valid civic issues!</p></div>
+      </div>`;
+  }
+</script>
+</body>
+</html>
