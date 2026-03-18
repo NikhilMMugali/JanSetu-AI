@@ -3,144 +3,447 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Dashboard — Civic Nili</title>
+  <title>Command Center — JanSetu AI</title>
   <link rel="stylesheet" href="/css/styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/admin.css">
+  <link href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet" />
+  <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
 </head>
-<body>
-<nav class="navbar">
-  <div class="container">
-    <a href="/admin/dashboard" class="nav-brand">Civic<span>Nili</span></a>
-    <ul class="nav-links">
-      <li><a href="/admin/dashboard">Dashboard</a></li>
-      <li><a href="/admin/review">Review Queue</a></li>
-      <li><a href="/priority">Priority</a></li>
-      <li><a href="/ledger">Ledger</a></li>
-      <li><a href="#" onclick="logout()" class="btn btn-sm btn-outline">Logout</a></li>
-    </ul>
-    <button class="hamburger" onclick="document.querySelector('.nav-links').classList.toggle('open')"><span></span><span></span><span></span></button>
+<body class="admin-body">
+
+<!-- ===== FULL-VIEWPORT LAYOUT ===== -->
+<div style="display:flex; flex-direction:column; height:100vh; overflow:hidden;">
+
+  <!-- ===== TOP NAV BAR (48px) ===== -->
+  <nav class="admin-nav">
+    <!-- Left: Brand -->
+    <div style="display:flex; align-items:center; gap:0;">
+      <a href="/admin/dashboard" class="admin-nav-brand">
+        JanSetu<span style="color:var(--admin-cyan);">AI</span><span class="sep">|</span><span style="color:var(--admin-text-muted); font-weight:400; font-size:12px; letter-spacing:0.06em;">COMMAND CENTER</span>
+      </a>
+    </div>
+
+    <!-- Center: Live status + clock -->
+    <div class="admin-nav-center">
+      <div class="live-indicator">LIVE</div>
+      <span class="admin-clock" id="admin-live-clock">00:00:00 IST</span>
+      <div class="admin-nav-links">
+        <a href="/admin/dashboard" class="admin-nav-link active">Dashboard</a>
+        <a href="/admin/review" class="admin-nav-link">Review Queue</a>
+        <a href="/admin/flagged" class="admin-nav-link">Flagged Users</a>
+        <a href="/priority" class="admin-nav-link">Priority</a>
+        <a href="/ledger" class="admin-nav-link">Ledger</a>
+      </div>
+    </div>
+
+    <!-- Right: Org name + user + sign out -->
+    <div class="admin-nav-right">
+      <span style="color:var(--admin-text-muted); font-size:10px; text-transform:uppercase; letter-spacing:0.08em;">Rajkot Municipal Corporation</span>
+      <span style="color:var(--admin-border); font-size:14px;">|</span>
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--admin-cyan);">
+        <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+      </svg>
+      <span id="admin-name" style="color:var(--admin-text-primary);">Admin</span>
+      <a href="#" onclick="logout()" class="admin-signout">SIGN OUT</a>
+    </div>
+  </nav>
+
+  <!-- ===== METRICS BAR (80px) ===== -->
+  <div class="admin-metrics-bar">
+
+    <div class="admin-metric-card accent-cyan">
+      <div class="metric-value accent-cyan" id="metric-total">—</div>
+      <div class="metric-label">Total Reports</div>
+    </div>
+
+    <div class="admin-metric-card accent-red">
+      <div style="display:flex; align-items:center; gap:6px;">
+        <div class="metric-value accent-red" id="metric-critical">—</div>
+        <div id="metric-critical-pulse" style="display:none; width:6px; height:6px; border-radius:50%; background:var(--admin-red); animation:live-pulse 1s infinite;"></div>
+      </div>
+      <div class="metric-label">Critical (Sev ≥4)</div>
+    </div>
+
+    <div class="admin-metric-card accent-amber">
+      <div class="metric-value accent-amber" id="metric-unresolved">—</div>
+      <div class="metric-label">Unresolved</div>
+    </div>
+
+    <div class="admin-metric-card accent-orange">
+      <div class="metric-value accent-orange" id="metric-inprocess">—</div>
+      <div class="metric-label">In Process</div>
+    </div>
+
+    <div class="admin-metric-card accent-green">
+      <div class="metric-value accent-green" id="metric-resolved">—</div>
+      <div class="metric-label">Resolved Today</div>
+    </div>
+
+    <div class="admin-metric-card accent-purple">
+      <div class="metric-value accent-purple" id="metric-pending">—</div>
+      <div class="metric-label">Pending Review</div>
+    </div>
+
   </div>
-</nav>
 
-<div class="dashboard">
-  <aside class="sidebar"><ul class="sidebar-nav" id="sidebar-nav"></ul></aside>
-  <main class="dash-main">
-    <div class="dash-header" data-animate>
-      <h1>🏛️ Municipal Admin Dashboard</h1>
-      <p>Manage civic issues, review AI failures, and prioritize resolution</p>
+  <!-- ===== MAIN AREA ===== -->
+  <div class="admin-main">
+
+    <!-- ===== FILTER SIDEBAR (260px) ===== -->
+    <aside class="admin-filter-sidebar">
+
+      <!-- Search -->
+      <div>
+        <div class="filter-section-title">Search Reports</div>
+        <input type="text" id="filter-search" class="admin-search-input" placeholder="Description, location, category…" autocomplete="off">
+      </div>
+
+      <!-- Categories -->
+      <div>
+        <div class="filter-section-title">Category</div>
+        <div class="filter-cat-grid">
+          <label class="filter-cat-item">
+            <input type="checkbox" class="filter-cat-cb" data-cat="all" checked>
+            <div class="filter-dot" style="background:var(--admin-text-muted);"></div>
+            All
+          </label>
+          <label class="filter-cat-item">
+            <input type="checkbox" class="filter-cat-cb" data-cat="pothole">
+            <div class="filter-dot" style="background:#f59e0b;"></div>
+            Pothole
+          </label>
+          <label class="filter-cat-item">
+            <input type="checkbox" class="filter-cat-cb" data-cat="streetlight">
+            <div class="filter-dot" style="background:#fbbf24;"></div>
+            Streetlight
+          </label>
+          <label class="filter-cat-item">
+            <input type="checkbox" class="filter-cat-cb" data-cat="waterlogging">
+            <div class="filter-dot" style="background:#00d4ff;"></div>
+            Water
+          </label>
+          <label class="filter-cat-item">
+            <input type="checkbox" class="filter-cat-cb" data-cat="garbage">
+            <div class="filter-dot" style="background:#22c55e;"></div>
+            Garbage
+          </label>
+          <label class="filter-cat-item">
+            <input type="checkbox" class="filter-cat-cb" data-cat="sewage">
+            <div class="filter-dot" style="background:#a855f7;"></div>
+            Sewage
+          </label>
+          <label class="filter-cat-item">
+            <input type="checkbox" class="filter-cat-cb" data-cat="road_damage">
+            <div class="filter-dot" style="background:#f97316;"></div>
+            Road
+          </label>
+          <label class="filter-cat-item">
+            <input type="checkbox" class="filter-cat-cb" data-cat="encroachment">
+            <div class="filter-dot" style="background:#ef4444;"></div>
+            Encroach
+          </label>
+          <label class="filter-cat-item" style="grid-column: span 2;">
+            <input type="checkbox" class="filter-cat-cb" data-cat="other">
+            <div class="filter-dot" style="background:#6b7280;"></div>
+            Other
+          </label>
+        </div>
+      </div>
+
+      <!-- Status -->
+      <div>
+        <div class="filter-section-title">Status</div>
+        <div class="filter-radio-group">
+          <label class="filter-radio-item">
+            <input type="radio" name="filter-status" class="filter-status-radio" value="all" checked>
+            <span>All</span>
+          </label>
+          <label class="filter-radio-item">
+            <input type="radio" name="filter-status" class="filter-status-radio" value="unresolved">
+            <div class="status-dot unresolved"></div>
+            <span>Unresolved</span>
+          </label>
+          <label class="filter-radio-item">
+            <input type="radio" name="filter-status" class="filter-status-radio" value="in_process">
+            <div class="status-dot in_process"></div>
+            <span>In Process</span>
+          </label>
+          <label class="filter-radio-item">
+            <input type="radio" name="filter-status" class="filter-status-radio" value="resolved">
+            <div class="status-dot resolved"></div>
+            <span>Resolved</span>
+          </label>
+          <label class="filter-radio-item">
+            <input type="radio" name="filter-status" class="filter-status-radio" value="pending_review">
+            <div style="width:8px; height:8px; border-radius:50%; background:var(--admin-purple); flex-shrink:0;"></div>
+            <span>Pending Review</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Severity -->
+      <div>
+        <div class="filter-section-title">
+          Min Severity — <span id="filter-severity-val" style="color:var(--admin-cyan);">1</span>/5
+        </div>
+        <input type="range" id="filter-severity" class="admin-range-input" min="1" max="5" value="1" step="1">
+        <div class="slider-labels">
+          <span>Low</span>
+          <span>Critical</span>
+        </div>
+      </div>
+
+      <!-- Date Range -->
+      <div>
+        <div class="filter-section-title">Date Range</div>
+        <div class="filter-radio-group">
+          <label class="filter-radio-item">
+            <input type="radio" name="filter-date" class="filter-date-radio" value="24h">
+            <span>Last 24 hours</span>
+          </label>
+          <label class="filter-radio-item">
+            <input type="radio" name="filter-date" class="filter-date-radio" value="7d">
+            <span>Last 7 days</span>
+          </label>
+          <label class="filter-radio-item">
+            <input type="radio" name="filter-date" class="filter-date-radio" value="30d">
+            <span>Last 30 days</span>
+          </label>
+          <label class="filter-radio-item">
+            <input type="radio" name="filter-date" class="filter-date-radio" value="all" checked>
+            <span>All time</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Map Layer Toggles -->
+      <div class="admin-toggle-section">
+        <div class="admin-toggle-section-title">Map Layers</div>
+
+        <!-- Heatmap Toggle -->
+        <div class="admin-switch-row">
+          <span class="admin-switch-label active-cyan" id="label-heatmap">
+            Heatmap
+          </span>
+          <label class="admin-switch heatmap-toggle">
+            <input
+              type="checkbox"
+              id="toggle-heatmap"
+              checked
+              onchange="handleHeatmapToggle(this.checked)"
+            />
+            <span class="admin-slider"></span>
+          </label>
+        </div>
+
+        <!-- Markers Toggle -->
+        <div class="admin-switch-row">
+          <span class="admin-switch-label active-green" id="label-markers">
+            Complaint Pins
+          </span>
+          <label class="admin-switch markers-toggle">
+            <input
+              type="checkbox"
+              id="toggle-markers"
+              checked
+              onchange="handleMarkersToggle(this.checked)"
+            />
+            <span class="admin-slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Result count + Reset -->
+      <div>
+        <div style="text-align:center; font-size:10px; font-family:var(--admin-font-data); color:var(--admin-text-muted); margin-bottom:8px;" id="filter-result-count"></div>
+        <button id="btn-reset-filters" class="btn-admin-reset">
+          Reset Filters
+        </button>
+      </div>
+
+    </aside>
+
+    <!-- ===== COMMAND MAP (center, flex-1) ===== -->
+    <div class="admin-map-container" id="admin-map-wrapper" style="position:relative; flex:1; overflow:hidden;">
+
+      <!-- RADAR LOADER OVERLAY — shown while map tiles load -->
+      <div id="map-loader-overlay">
+        <div class="svg-frame">
+          <svg style="--i:0;--j:0;">
+            <g id="out1">
+              <path d="M72 172C72 116.772 116.772 72 172 72C227.228 72 272 116.772 272 172C272 227.228 227.228 272 172 272C116.772 272 72 227.228 72 172ZM197.322 172C197.322 158.015 185.985 146.678 172 146.678C158.015 146.678 146.678 158.015 146.678 172C146.678 185.985 158.015 197.322 172 197.322C185.985 197.322 197.322 185.985 197.322 172Z"></path>
+              <path mask="url(#path-1-inside-1_111_3212)" stroke-miterlimit="16" stroke-width="2" stroke="#00FFFF" d="M72 172C72 116.772 116.772 72 172 72C227.228 72 272 116.772 272 172C272 227.228 227.228 272 172 272C116.772 272 72 227.228 72 172ZM197.322 172C197.322 158.015 185.985 146.678 172 146.678C158.015 146.678 146.678 158.015 146.678 172C146.678 185.985 158.015 197.322 172 197.322C185.985 197.322 197.322 185.985 197.322 172Z"></path>
+            </g>
+          </svg>
+          <svg style="--i:1;--j:1;">
+            <g id="out2">
+              <mask fill="white" id="path-2-inside-2_111_3212">
+                <path d="M102.892 127.966C93.3733 142.905 88.9517 160.527 90.2897 178.19L94.3752 177.88C93.1041 161.1 97.3046 144.36 106.347 130.168L102.892 127.966Z"></path>
+                <path d="M93.3401 194.968C98.3049 211.971 108.646 226.908 122.814 237.541L125.273 234.264C111.814 224.163 101.99 209.973 97.2731 193.819L93.3401 194.968Z"></path>
+                <path d="M152.707 92.3592C140.33 95.3575 128.822 101.199 119.097 109.421L121.742 112.55C130.981 104.739 141.914 99.1897 153.672 96.3413L152.707 92.3592Z"></path>
+                <path d="M253.294 161.699C255.099 175.937 253.132 190.4 247.59 203.639L243.811 202.057C249.075 189.48 250.944 175.74 249.23 162.214L253.294 161.699Z"></path>
+                <path d="M172 90.0557C184.677 90.0557 197.18 92.9967 208.528 98.6474C219.875 104.298 229.757 112.505 237.396 122.621L234.126 125.09C226.869 115.479 217.481 107.683 206.701 102.315C195.921 96.9469 184.043 94.1529 172 94.1529V90.0557Z"></path>
+                <path d="M244.195 133.235C246.991 138.442 249.216 143.937 250.83 149.623L246.888 150.742C245.355 145.34 243.242 140.12 240.586 135.174L244.195 133.235Z"></path>
+                <path d="M234.238 225.304C223.932 237.338 210.358 246.126 195.159 250.604C179.961 255.082 163.79 255.058 148.606 250.534L149.775 246.607C164.201 250.905 179.563 250.928 194.001 246.674C208.44 242.42 221.335 234.071 231.126 222.639L234.238 225.304Z"></path>
+              </mask>
+              <path mask="url(#path-2-inside-2_111_3212)" fill="#00FFFF" d="M102.892 127.966L105.579 123.75L101.362 121.063L98.6752 125.28L102.892 127.966ZM90.2897 178.19L85.304 178.567L85.6817 183.553L90.6674 183.175L90.2897 178.19ZM94.3752 177.88L94.7529 182.866L99.7386 182.488L99.3609 177.503L94.3752 177.88ZM106.347 130.168L110.564 132.855L113.251 128.638L109.034 125.951L106.347 130.168ZM93.3401 194.968L91.9387 190.168L87.1391 191.569L88.5405 196.369L93.3401 194.968ZM122.814 237.541L119.813 241.54L123.812 244.541L126.813 240.542L122.814 237.541ZM125.273 234.264L129.272 237.265L132.273 233.266L128.274 230.265L125.273 234.264ZM97.2731 193.819L102.073 192.418L100.671 187.618L95.8717 189.02L97.2731 193.819ZM152.707 92.3592L157.567 91.182L156.389 86.3226L151.53 87.4998L152.707 92.3592ZM119.097 109.421L115.869 105.603L112.05 108.831L115.278 112.649L119.097 109.421ZM121.742 112.55L117.924 115.778L121.152 119.596L124.97 116.368L121.742 112.55ZM153.672 96.3413L154.849 101.201L159.708 100.023L158.531 95.1641L153.672 96.3413ZM253.294 161.699L258.255 161.07L257.626 156.11L252.666 156.738L253.294 161.699ZM247.59 203.639L245.66 208.251L250.272 210.182L252.203 205.569L247.59 203.639ZM243.811 202.057L239.198 200.126L237.268 204.739L241.88 206.669L243.811 202.057ZM249.23 162.214L248.601 157.253L243.641 157.882L244.269 162.842L249.23 162.214ZM172 90.0557V85.0557H167V90.0557H172ZM208.528 98.6474L206.299 103.123L206.299 103.123L208.528 98.6474ZM237.396 122.621L240.409 126.611L244.399 123.598L241.386 119.608L237.396 122.621ZM234.126 125.09L230.136 128.103L233.149 132.093L237.139 129.08L234.126 125.09ZM206.701 102.315L204.473 106.791L204.473 106.791L206.701 102.315ZM172 94.1529H167V99.1529H172V94.1529ZM244.195 133.235L248.601 130.87L246.235 126.465L241.83 128.83L244.195 133.235ZM250.83 149.623L252.195 154.433L257.005 153.067L255.64 148.257L250.83 149.623ZM246.888 150.742L242.078 152.107L243.444 156.917L248.254 155.552L246.888 150.742ZM240.586 135.174L238.22 130.768L233.815 133.134L236.181 137.539L240.586 135.174ZM234.238 225.304L238.036 228.556L241.288 224.759L237.491 221.506L234.238 225.304ZM195.159 250.604L196.572 255.4L196.572 255.4L195.159 250.604ZM148.606 250.534L143.814 249.107L142.386 253.899L147.178 255.326L148.606 250.534ZM149.775 246.607L151.203 241.816L146.411 240.388L144.983 245.18L149.775 246.607ZM194.001 246.674L195.415 251.47L195.415 251.47L194.001 246.674ZM231.126 222.639L234.379 218.841L230.581 215.589L227.329 219.386L231.126 222.639Z"></path>
+            </g>
+          </svg>
+          <svg style="--i:0;--j:2;">
+            <g id="inner3">
+              <path d="M195.136 135.689C188.115 131.215 179.948 128.873 171.624 128.946C163.299 129.019 155.174 131.503 148.232 136.099L148.42 136.382C155.307 131.823 163.368 129.358 171.627 129.286C179.886 129.213 187.988 131.537 194.954 135.975L195.136 135.689Z"></path>
+              <path d="M195.136 208.311C188.115 212.784 179.948 215.127 171.624 215.054C163.299 214.981 155.174 212.496 148.232 207.901L148.42 207.618C155.307 212.177 163.368 214.642 171.627 214.714C179.886 214.786 187.988 212.463 194.954 208.025L195.136 208.311Z"></path>
+              <path mask="url(#path-5-inside-3_111_3212)" fill="#00FFFF" d="M195.136 135.689L195.474 135.904L195.689 135.566L195.351 135.352L195.136 135.689ZM171.624 128.946L171.627 129.346L171.624 128.946ZM148.232 136.099L148.011 135.765L147.678 135.986L147.899 136.32L148.232 136.099ZM148.42 136.382L148.086 136.603L148.307 136.936L148.641 136.716L148.42 136.382ZM171.627 129.286L171.63 129.686L171.627 129.286ZM194.954 135.975L194.739 136.313L195.076 136.528L195.291 136.19L194.954 135.975ZM195.136 208.311L195.351 208.648L195.689 208.433L195.474 208.096L195.136 208.311ZM171.624 215.054L171.627 214.654L171.624 215.054ZM148.232 207.901L147.899 207.68L147.678 208.014L148.011 208.234L148.232 207.901ZM148.42 207.618L148.641 207.284L148.307 207.063L148.086 207.397L148.42 207.618ZM171.627 214.714L171.63 214.314L171.627 214.714ZM194.954 208.025L195.291 207.81L195.076 207.472L194.739 207.687L194.954 208.025ZM195.351 135.352C188.265 130.836 180.022 128.473 171.62 128.546L171.627 129.346C179.874 129.274 187.966 131.594 194.921 136.026L195.351 135.352ZM171.62 128.546C163.218 128.619 155.018 131.127 148.011 135.765L148.453 136.432C155.33 131.88 163.38 129.418 171.627 129.346L171.62 128.546ZM147.899 136.32L148.086 136.603L148.753 136.161L148.566 135.878L147.899 136.32ZM148.641 136.716C155.463 132.199 163.448 129.757 171.63 129.686L171.623 128.886C163.287 128.958 155.15 131.447 148.199 136.049L148.641 136.716ZM171.63 129.686C179.812 129.614 187.839 131.916 194.739 136.313L195.169 135.638C188.138 131.158 179.959 128.813 171.623 128.886L171.63 129.686ZM195.291 136.19L195.474 135.904L194.799 135.474L194.617 135.76L195.291 136.19ZM194.921 207.974C187.966 212.406 179.874 214.726 171.627 214.654L171.62 215.454C180.022 215.527 188.265 213.163 195.351 208.648L194.921 207.974ZM171.627 214.654C163.38 214.582 155.33 212.12 148.453 207.567L148.011 208.234C155.018 212.873 163.218 215.38 171.62 215.454L171.627 214.654ZM148.566 208.122L148.753 207.838L148.086 207.397L147.899 207.68L148.566 208.122ZM148.199 207.951C155.15 212.553 163.287 215.041 171.623 215.114L171.63 214.314C163.448 214.243 155.463 211.801 148.641 207.284L148.199 207.951ZM171.623 215.114C179.959 215.187 188.138 212.842 195.169 208.362L194.739 207.687C187.839 212.084 179.812 214.386 171.63 214.314L171.623 215.114ZM194.617 208.239L194.799 208.526L195.474 208.096L195.291 207.81L194.617 208.239Z"></path>
+            </g>
+            <path stroke="#00FFFF" d="M240.944 172C240.944 187.951 235.414 203.408 225.295 215.738C215.176 228.068 201.095 236.508 185.45 239.62C169.806 242.732 153.567 240.323 139.5 232.804C125.433 225.285 114.408 213.12 108.304 198.384C102.2 183.648 101.394 167.25 106.024 151.987C110.654 136.723 120.434 123.537 133.696 114.675C146.959 105.813 162.884 101.824 178.758 103.388C194.632 104.951 209.472 111.97 220.751 123.249" id="out3"></path>
+          </svg>
+          <svg style="--i:1;--j:3;">
+            <g id="inner1">
+              <path fill="#00FFFF" d="M145.949 124.51L148.554 129.259C156.575 124.859 165.672 122.804 174.806 123.331C183.94 123.858 192.741 126.944 200.203 132.236C207.665 137.529 213.488 144.815 217.004 153.261C220.521 161.707 221.59 170.972 220.09 179.997L224.108 180.665L224.102 180.699L229.537 181.607C230.521 175.715 230.594 169.708 229.753 163.795L225.628 164.381C224.987 159.867 223.775 155.429 222.005 151.179C218.097 141.795 211.628 133.699 203.337 127.818C195.045 121.937 185.266 118.508 175.118 117.923C165.302 117.357 155.525 119.474 146.83 124.037C146.535 124.192 146.241 124.349 145.949 124.51ZM224.638 164.522C224.009 160.091 222.819 155.735 221.082 151.563C217.246 142.352 210.897 134.406 202.758 128.634C194.62 122.862 185.021 119.496 175.06 118.922C165.432 118.367 155.841 120.441 147.311 124.914L148.954 127.91C156.922 123.745 165.876 121.814 174.864 122.333C184.185 122.87 193.166 126.019 200.782 131.421C208.397 136.822 214.339 144.257 217.928 152.877C221.388 161.188 222.526 170.276 221.23 179.173L224.262 179.677C224.998 174.671 225.35 169.535 224.638 164.522Z" clip-rule="evenodd" fill-rule="evenodd"></path>
+              <path fill="#00FFFF" d="M139.91 220.713C134.922 217.428 130.469 213.395 126.705 208.758L130.983 205.286L130.985 205.288L134.148 202.721C141.342 211.584 151.417 217.642 162.619 219.839C173.821 222.036 185.438 220.232 195.446 214.742L198.051 219.491C197.759 219.651 197.465 219.809 197.17 219.963C186.252 225.693 173.696 227.531 161.577 225.154C154.613 223.789 148.041 221.08 142.202 217.234L139.91 220.713ZM142.752 216.399C148.483 220.174 154.934 222.833 161.769 224.173C173.658 226.504 185.977 224.704 196.689 219.087L195.046 216.09C185.035 221.323 173.531 222.998 162.427 220.82C151.323 218.643 141.303 212.747 134.01 204.122L131.182 206.5C134.451 210.376 138.515 213.607 142.752 216.399Z" clip-rule="evenodd" fill-rule="evenodd"></path>
+            </g>
+          </svg>
+          <svg style="--i:2;--j:4;">
+            <path fill="#00FFFF" d="M180.956 186.056C183.849 184.212 186.103 181.521 187.41 178.349C188.717 175.177 189.013 171.679 188.258 168.332C187.503 164.986 185.734 161.954 183.192 159.65C180.649 157.346 177.458 155.883 174.054 155.46C170.649 155.038 167.197 155.676 164.169 157.288C161.14 158.9 158.683 161.407 157.133 164.468C155.582 167.528 155.014 170.992 155.505 174.388C155.997 177.783 157.524 180.944 159.879 183.439L161.129 182.259C159.018 180.021 157.648 177.186 157.207 174.141C156.766 171.096 157.276 167.989 158.667 165.245C160.057 162.5 162.261 160.252 164.977 158.806C167.693 157.36 170.788 156.788 173.842 157.167C176.895 157.546 179.757 158.858 182.037 160.924C184.317 162.99 185.904 165.709 186.581 168.711C187.258 171.712 186.992 174.849 185.82 177.694C184.648 180.539 182.627 182.952 180.032 184.606L180.956 186.056Z" id="center1"></path>
+            <path fill="#00FFFF" d="M172 166.445C175.068 166.445 177.556 168.932 177.556 172C177.556 175.068 175.068 177.556 172 177.556C168.932 177.556 166.444 175.068 166.444 172C166.444 168.932 168.932 166.445 172 166.445ZM172 177.021C174.773 177.021 177.021 174.773 177.021 172C177.021 169.227 174.773 166.979 172 166.979C169.227 166.979 166.979 169.227 166.979 172C166.979 174.773 169.227 177.021 172 177.021Z" id="center"></path>
+          </svg>
+        </div>
+        <div class="map-loader-text">Initializing Command Map</div>
+        <div class="map-loader-sub">Loading Rajkot City Grid...</div>
+      </div>
+      <!-- END RADAR LOADER -->
+
+      <!-- Actual map div -->
+      <div id="admin-command-map"></div>
+
+      <!-- Map overlay: coordinates display -->
+      <div id="map-coords" style="
+        position:absolute; bottom:12px; left:12px;
+        background:rgba(8,12,24,0.85);
+        border:1px solid var(--admin-border);
+        border-radius:6px;
+        padding:5px 10px;
+        font-family:var(--admin-font-data);
+        font-size:10px;
+        color:var(--admin-text-muted);
+        pointer-events:none;
+        z-index:10;
+      ">
+        Rajkot, Gujarat · 22.3039°N 70.8022°E
+      </div>
     </div>
 
-    <div class="stat-cards">
-      <div class="stat-card" data-animate style="border-left: 4px solid var(--amber);">
-        <div class="sc-label">Pending AI Reviews</div>
-        <div class="sc-value" style="color: var(--amber);" id="pending-count" data-count="5">0</div>
-        <div class="sc-change down">Needs attention</div>
-      </div>
-      <div class="stat-card" data-animate data-delay="100" style="border-left: 4px solid var(--primary);">
-        <div class="sc-label">Total Active Issues</div>
-        <div class="sc-value" style="color: var(--primary);" data-count="142">0</div>
-        <div class="sc-change up">↑ 12 today</div>
-      </div>
-      <div class="stat-card" data-animate data-delay="200" style="border-left: 4px solid var(--green);">
-        <div class="sc-label">Resolved Today</div>
-        <div class="sc-value" style="color: var(--green);" data-count="28">0</div>
-        <div class="sc-change up">↑ 15% vs yesterday</div>
-      </div>
-      <div class="stat-card" data-animate data-delay="300" style="border-left: 4px solid var(--teal);">
-        <div class="sc-label">Avg Resolution Time</div>
-        <div class="sc-value" style="color: var(--teal);">3.2h</div>
-        <div class="sc-change up">↓ 0.5h improvement</div>
-      </div>
-    </div>
+    <!-- ===== AI INSIGHT PANEL (300px) ===== -->
+    <aside class="admin-insight-panel">
 
-    <!-- Priority Queue -->
-    <h3 style="margin-bottom: 16px;" data-animate>High Priority Queue</h3>
-    <div class="card" style="padding: 0; overflow: hidden;" data-animate data-delay="100">
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>Issue</th>
-            <th>Location</th>
-            <th>Priority Score</th>
-            <th>Votes</th>
-            <th>Status</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><strong>Water Pipeline Leakage</strong></td>
-            <td>Sector 14, Mumbai</td>
-            <td><span style="color:var(--red); font-weight:700;">94</span>/100</td>
-            <td>89 🗳️</td>
-            <td><span class="badge badge-red">Critical</span></td>
-            <td><button class="btn btn-sm btn-primary" onclick="showToast('Dispatching team...','success')">Dispatch</button></td>
-          </tr>
-          <tr>
-            <td><strong>Large Pothole on MG Road</strong></td>
-            <td>Sector 21, Mumbai</td>
-            <td><span style="color:var(--amber); font-weight:700;">78</span>/100</td>
-            <td>47 🗳️</td>
-            <td><span class="badge badge-amber">High</span></td>
-            <td><button class="btn btn-sm btn-primary" onclick="showToast('Dispatching team...','success')">Dispatch</button></td>
-          </tr>
-          <tr>
-            <td><strong>Illegal Dumping Site</strong></td>
-            <td>River Road, Chennai</td>
-            <td><span style="color:var(--amber); font-weight:700;">72</span>/100</td>
-            <td>56 🗳️</td>
-            <td><span class="badge badge-amber">High</span></td>
-            <td><button class="btn btn-sm btn-primary" onclick="showToast('Dispatching team...','success')">Dispatch</button></td>
-          </tr>
-          <tr>
-            <td><strong>Garbage Pile Near Market</strong></td>
-            <td>Central Market, Mumbai</td>
-            <td><span style="color:var(--primary); font-weight:700;">55</span>/100</td>
-            <td>23 🗳️</td>
-            <td><span class="badge badge-blue">Medium</span></td>
-            <td><button class="btn btn-sm btn-outline" onclick="showToast('Added to queue','info')">Queue</button></td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <!-- AI Failure Alert -->
-    <div style="margin-top: 32px; padding: 24px; background: rgba(245,158,11,.06); border: 1px solid rgba(245,158,11,.2); border-radius: var(--radius-lg);" data-animate>
-      <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
-        <span style="font-size: 1.5rem;">⚠️</span>
-        <h3 style="color: var(--amber);">AI Failure Reviews Pending</h3>
-        <span class="badge badge-amber" id="ai-fail-badge">5 pending</span>
+      <div class="panel-header">
+        <span class="panel-title">AI Priority Intel</span>
+        <div class="live-indicator" style="font-size:10px;">LIVE</div>
       </div>
-      <p style="color: var(--slate-light); font-size: .9rem; margin-bottom: 16px;">These reports could not be classified by AI (confidence &lt;80%). Manual classification required.</p>
-      <a href="/admin/review" class="btn btn-amber">Review Now →</a>
-    </div>
 
-    <!-- Chart -->
-    <h3 style="margin: 32px 0 16px;" data-animate>Issues by Category (This Week)</h3>
-    <div class="chart-placeholder" style="height: 250px; align-items: flex-end;" data-animate data-delay="100">
-      <div class="chart-bar" data-height="80%" style="background: var(--gradient-primary);"><span class="chart-val">34</span><span class="chart-label">Pothole</span></div>
-      <div class="chart-bar" data-height="50%" style="background: linear-gradient(135deg, var(--teal), var(--teal-light));"><span class="chart-val">21</span><span class="chart-label">Garbage</span></div>
-      <div class="chart-bar" data-height="35%" style="background: linear-gradient(135deg, var(--amber), #F97316);"><span class="chart-val">15</span><span class="chart-label">Lights</span></div>
-      <div class="chart-bar" data-height="65%" style="background: linear-gradient(135deg, #3B82F6, #60A5FA);"><span class="chart-val">27</span><span class="chart-label">Water</span></div>
-      <div class="chart-bar" data-height="40%" style="background: linear-gradient(135deg, var(--slate), var(--slate-light));"><span class="chart-val">17</span><span class="chart-label">Roads</span></div>
-      <div class="chart-bar" data-height="25%" style="background: linear-gradient(135deg, var(--red), var(--red-light));"><span class="chart-val">10</span><span class="chart-label">Other</span></div>
-    </div>
-  </main>
-</div>
+      <div style="font-size:10px; font-family:var(--admin-font-data); color:var(--admin-text-muted); text-transform:uppercase; letter-spacing:0.1em; margin-bottom:4px;">
+        Top Reports by Severity
+      </div>
+
+      <div id="ai-insights-list">
+        <div style="text-align:center; padding:30px; color:var(--admin-text-muted); font-family:var(--admin-font-data); font-size:11px;">
+          LOADING…
+        </div>
+      </div>
+
+      <!-- Divider -->
+      <div style="border-top:1px solid var(--admin-border); margin:8px 0;"></div>
+
+      <!-- Quick Actions -->
+      <div style="font-size:10px; font-family:var(--admin-font-data); color:var(--admin-text-muted); text-transform:uppercase; letter-spacing:0.1em; margin-bottom:8px;">
+        Quick Actions
+      </div>
+      <a href="/admin/review" class="btn-admin-primary" style="text-decoration:none; display:flex; align-items:center; justify-content:center; gap:7px; margin-bottom:8px;">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        Review Queue
+      </a>
+      <a href="/admin/flagged" class="btn-admin-danger" style="text-decoration:none; display:flex; align-items:center; justify-content:center; gap:7px;">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+        Flagged Users
+      </a>
+
+    </aside>
+
+  </div><!-- /.admin-main -->
+
+</div><!-- /.full-viewport -->
+
+<script>
+// Toggle Switch Handlers for Map Layers
+function handleHeatmapToggle(isOn) {
+  const label = document.getElementById('label-heatmap');
+  if (isOn) {
+    label.classList.add('active-cyan');
+    label.classList.remove('inactive');
+    if (window.adminMapInstance) {
+      const visibility = window.adminMapInstance.getLayer('complaints-heatmap');
+      if (visibility) {
+        window.adminMapInstance.setLayoutProperty('complaints-heatmap', 'visibility', 'visible');
+      }
+    }
+  } else {
+    label.classList.remove('active-cyan');
+    label.style.color = '#4a5568';
+    if (window.adminMapInstance) {
+      const visibility = window.adminMapInstance.getLayer('complaints-heatmap');
+      if (visibility) {
+        window.adminMapInstance.setLayoutProperty('complaints-heatmap', 'visibility', 'none');
+      }
+    }
+  }
+  if (window.updateMapAndList) updateMapAndList();
+}
+
+function handleMarkersToggle(isOn) {
+  const label = document.getElementById('label-markers');
+  if (isOn) {
+    label.classList.add('active-green');
+    label.style.color = '';
+  } else {
+    label.classList.remove('active-green');
+    label.style.color = '#4a5568';
+  }
+  if (window.updateMapAndList) updateMapAndList();
+}
+
+// Hide radar loader once map tiles finish loading
+window.addEventListener('load', function() {
+  // Wait a moment for the map to initialize
+  setTimeout(() => {
+    if (window.adminMapInstance) {
+      window.adminMapInstance.on('load', function() {
+        const overlay = document.getElementById('map-loader-overlay');
+        if (overlay && !overlay.classList.contains('hidden')) {
+          overlay.classList.add('fade-out');
+          setTimeout(() => {
+            overlay.classList.add('hidden');
+          }, 700);
+        }
+      });
+    }
+  }, 100);
+});
+
+// Safety fallback — hide loader after 4 seconds regardless
+setTimeout(() => {
+  const overlay = document.getElementById('map-loader-overlay');
+  if (overlay && !overlay.classList.contains('hidden')) {
+    overlay.classList.add('fade-out');
+    setTimeout(() => overlay.classList.add('hidden'), 700);
+  }
+}, 4000);
+</script>
 
 <script src="/js/app.js"></script>
-<script>
-  const session = Session.get();
-  if (!session || session.role !== 'admin') { window.location.href = '/login?role=admin'; }
-  else { document.getElementById('sidebar-nav').innerHTML = getNavHTML('admin', '/admin/dashboard'); }
-
-  // Update pending count from store
-  document.addEventListener('DOMContentLoaded', () => {
-    const pc = document.getElementById('pending-count');
-    if (pc) pc.dataset.count = CivicStore.pendingReviews;
-    const badge = document.getElementById('ai-fail-badge');
-    if (badge) badge.textContent = CivicStore.pendingReviews + ' pending';
-    initChartBars();
-  });
-</script>
+<script src="/js/admin-map.js"></script>
+<script src="/js/admin-dashboard.js"></script>
 </body>
 </html>

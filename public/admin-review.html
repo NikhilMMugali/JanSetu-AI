@@ -3,208 +3,390 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI Review Queue — Civic Nili</title>
+  <title>AI Review Queue — JanSetu AI</title>
   <link rel="stylesheet" href="/css/styles.css">
-  <style>
-    .review-grid { display: flex; flex-direction: column; gap: 20px; }
-    .review-img { width: 200px; height: 140px; object-fit: cover; border-radius: var(--radius); flex-shrink: 0; }
-    @media(max-width:768px) { .review-card { grid-template-columns: 1fr !important; } .review-img { width: 100%; height: 180px; } }
-  </style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/admin.css">
 </head>
-<body>
-<nav class="navbar">
-  <div class="container">
-    <a href="/admin/dashboard" class="nav-brand">Civic<span>Nili</span></a>
-    <ul class="nav-links">
-      <li><a href="/admin/dashboard">Dashboard</a></li>
-      <li><a href="/admin/review">Review Queue</a></li>
-      <li><a href="/priority">Priority</a></li>
-      <li><a href="#" onclick="logout()" class="btn btn-sm btn-outline">Logout</a></li>
-    </ul>
-    <button class="hamburger" onclick="document.querySelector('.nav-links').classList.toggle('open')"><span></span><span></span><span></span></button>
+<body class="admin-body" style="overflow:hidden; height:100vh;">
+
+<div class="admin-scroll-layout">
+
+  <!-- ===== NAV ===== -->
+  <nav class="admin-nav">
+    <div style="display:flex; align-items:center;">
+      <a href="/admin/dashboard" class="admin-nav-brand">
+        JanSetu<span style="color:var(--admin-cyan);">AI</span><span class="sep">|</span><span style="color:var(--admin-text-muted); font-weight:400; font-size:12px; letter-spacing:0.06em;">AI REVIEW QUEUE</span>
+      </a>
+    </div>
+    <div class="admin-nav-center">
+      <div class="live-indicator">LIVE</div>
+      <div class="admin-nav-links">
+        <a href="/admin/dashboard" class="admin-nav-link">Dashboard</a>
+        <a href="/admin/review" class="admin-nav-link active">Review Queue</a>
+        <a href="/admin/flagged" class="admin-nav-link">Flagged Users</a>
+        <a href="/priority" class="admin-nav-link">Priority</a>
+        <a href="/ledger" class="admin-nav-link">Ledger</a>
+      </div>
+    </div>
+    <div class="admin-nav-right">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--admin-cyan);"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+      <span id="admin-name" style="color:var(--admin-text-primary);">Admin</span>
+      <a href="#" onclick="logout()" class="admin-signout">SIGN OUT</a>
+    </div>
+  </nav>
+
+  <!-- ===== SCROLLABLE CONTENT ===== -->
+  <div class="admin-scroll-content">
+
+    <!-- Page Header -->
+    <div class="admin-page-header">
+      <div>
+        <div style="display:flex; align-items:center; gap:12px;">
+          <div class="admin-page-title">AI Failure Review Queue</div>
+          <span id="pending-badge" style="background:rgba(255,170,0,0.12); color:var(--admin-amber); border:1px solid rgba(255,170,0,0.3); padding:3px 10px; border-radius:4px; font-size:10px; font-family:var(--admin-font-data); font-weight:600; letter-spacing:0.08em; text-transform:uppercase;">0 PENDING</span>
+        </div>
+        <div class="admin-page-subtitle">Reports where AI confidence &lt; 80% — manual classification required before they go live</div>
+      </div>
+      <a href="/admin/dashboard" class="btn-admin-primary" style="text-decoration:none; font-size:11px;">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15,18 9,12 15,6"/></svg>
+        Command Center
+      </a>
+    </div>
+
+    <!-- Stats -->
+    <div class="admin-stats-row">
+      <div class="admin-stat-box amber">
+        <div class="admin-stat-num amber" id="stat-pending">0</div>
+        <div class="admin-stat-label">Pending Reviews</div>
+      </div>
+      <div class="admin-stat-box green">
+        <div class="admin-stat-num green" id="stat-reviewed">0</div>
+        <div class="admin-stat-label">Reviewed Today</div>
+      </div>
+      <div class="admin-stat-box cyan">
+        <div class="admin-stat-num cyan" id="stat-training">0</div>
+        <div class="admin-stat-label">Training Data Added</div>
+      </div>
+      <div class="admin-stat-box red">
+        <div class="admin-stat-num red" id="stat-rejected">0</div>
+        <div class="admin-stat-label">Rejected (False)</div>
+      </div>
+    </div>
+
+    <!-- Legend -->
+    <div style="display:flex; align-items:center; gap:16px; margin-bottom:18px; padding:10px 14px; background:rgba(255,170,0,0.04); border:1px solid rgba(255,170,0,0.12); border-radius:8px;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--admin-amber)" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <span style="font-size:11px; font-family:var(--admin-font-ui); color:var(--admin-text-secondary);">
+        These reports could not be automatically classified by the AI vision model (confidence below 80%). Select the correct category and submit to training data, or reject as a false report.
+      </span>
+    </div>
+
+    <!-- Review Grid -->
+    <div id="review-grid"></div>
+
+    <!-- Empty State -->
+    <div id="empty-state" style="display:none;">
+      <div class="admin-empty-state">
+        <span class="empty-icon">✓</span>
+        <h3>Review Queue Clear</h3>
+        <p>All pending AI review items have been processed. Great work!</p>
+      </div>
+    </div>
+
   </div>
-</nav>
-
-<div class="dashboard">
-  <aside class="sidebar"><ul class="sidebar-nav" id="sidebar-nav"></ul></aside>
-  <main class="dash-main">
-    <div class="dash-header" data-animate>
-      <div style="display:flex; align-items:center; gap:16px; flex-wrap:wrap;">
-        <h1>🔍 AI Failure Review Queue</h1>
-        <span class="badge badge-amber" style="font-size: .9rem; padding: 8px 16px;" id="pending-badge">5 pending</span>
-      </div>
-      <p>These reports could not be classified by AI (confidence &lt;80%). Manual classification required.</p>
-    </div>
-
-    <div style="display:flex; gap:16px; margin-bottom:24px;" data-animate>
-      <div class="stat-card" style="flex:1; border-left:4px solid var(--amber);">
-        <div class="sc-label">Pending Reviews</div>
-        <div class="sc-value" style="color:var(--amber);" id="pending-num">5</div>
-      </div>
-      <div class="stat-card" style="flex:1; border-left:4px solid var(--green);">
-        <div class="sc-label">Reviewed Today</div>
-        <div class="sc-value" style="color:var(--green);" id="reviewed-num">12</div>
-      </div>
-      <div class="stat-card" style="flex:1; border-left:4px solid var(--primary);">
-        <div class="sc-label">Training Data Added</div>
-        <div class="sc-value" style="color:var(--primary);" id="training-num">23</div>
-      </div>
-    </div>
-
-    <div class="review-grid" id="review-grid">
-      <!-- Review Item 1 -->
-      <div class="review-card" data-animate id="review-1">
-        <img src="https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?w=300&h=200&fit=crop" class="review-img" alt="Issue">
-        <div class="review-info">
-          <span class="badge-inline badge-red" style="background:rgba(239,68,68,.1); color:var(--red);">AI Confidence: LOW</span>
-          <h4>Unclassified Issue — Sector 7</h4>
-          <p style="color:var(--slate-light); font-size:.9rem;">Reported by citizen_user_42 • 1 hour ago</p>
-          <p style="color:var(--slate-light); font-size:.85rem; margin-top:8px;">📍 Sector 7, Mumbai</p>
-          <div style="margin-top: 12px;">
-            <label style="font-size:.8rem; font-weight:600; display:block; margin-bottom:4px;">Classify as:</label>
-            <select class="form-select" style="max-width:250px;" id="cat-1">
-              <option value="">— Select Category —</option>
-              <option>Pothole</option>
-              <option>Broken Streetlight</option>
-              <option>Garbage</option>
-              <option>Water Leakage</option>
-              <option>Road Damage</option>
-              <option>Illegal Dumping</option>
-            </select>
-          </div>
-        </div>
-        <div class="review-actions">
-          <button class="btn btn-sm btn-teal" onclick="approveReview('review-1','cat-1')">✓ Submit to Training</button>
-          <button class="btn btn-sm btn-red" onclick="rejectReview('review-1')">✗ False Report</button>
-        </div>
-      </div>
-
-      <!-- Review Item 2 -->
-      <div class="review-card" data-animate data-delay="100" id="review-2">
-        <img src="https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?w=300&h=200&fit=crop" class="review-img" alt="Issue">
-        <div class="review-info">
-          <span class="badge-inline badge-red" style="background:rgba(239,68,68,.1); color:var(--red);">AI Confidence: LOW</span>
-          <h4>Unclassified Issue — Market Area</h4>
-          <p style="color:var(--slate-light); font-size:.9rem;">Reported by citizen_user_88 • 2 hours ago</p>
-          <p style="color:var(--slate-light); font-size:.85rem; margin-top:8px;">📍 Central Market, Delhi</p>
-          <div style="margin-top: 12px;">
-            <label style="font-size:.8rem; font-weight:600; display:block; margin-bottom:4px;">Classify as:</label>
-            <select class="form-select" style="max-width:250px;" id="cat-2">
-              <option value="">— Select Category —</option>
-              <option>Pothole</option>
-              <option>Broken Streetlight</option>
-              <option>Garbage</option>
-              <option>Water Leakage</option>
-              <option>Road Damage</option>
-              <option>Illegal Dumping</option>
-            </select>
-          </div>
-        </div>
-        <div class="review-actions">
-          <button class="btn btn-sm btn-teal" onclick="approveReview('review-2','cat-2')">✓ Submit to Training</button>
-          <button class="btn btn-sm btn-red" onclick="rejectReview('review-2')">✗ False Report</button>
-        </div>
-      </div>
-
-      <!-- Review Item 3 -->
-      <div class="review-card" data-animate data-delay="200" id="review-3">
-        <img src="https://images.unsplash.com/photo-1504309092620-4d0ec726efa4?w=300&h=200&fit=crop" class="review-img" alt="Issue">
-        <div class="review-info">
-          <span class="badge-inline badge-red" style="background:rgba(239,68,68,.1); color:var(--red);">AI Confidence: LOW</span>
-          <h4>Unclassified Issue — Highway</h4>
-          <p style="color:var(--slate-light); font-size:.9rem;">Reported by citizen_user_12 • 3 hours ago</p>
-          <p style="color:var(--slate-light); font-size:.85rem; margin-top:8px;">📍 NH-48, Bangalore</p>
-          <div style="margin-top: 12px;">
-            <label style="font-size:.8rem; font-weight:600; display:block; margin-bottom:4px;">Classify as:</label>
-            <select class="form-select" style="max-width:250px;" id="cat-3">
-              <option value="">— Select Category —</option>
-              <option>Pothole</option>
-              <option>Broken Streetlight</option>
-              <option>Garbage</option>
-              <option>Water Leakage</option>
-              <option>Road Damage</option>
-              <option>Illegal Dumping</option>
-            </select>
-          </div>
-        </div>
-        <div class="review-actions">
-          <button class="btn btn-sm btn-teal" onclick="approveReview('review-3','cat-3')">✓ Submit to Training</button>
-          <button class="btn btn-sm btn-red" onclick="rejectReview('review-3')">✗ False Report</button>
-        </div>
-      </div>
-    </div>
-
-    <div id="empty-state" style="display:none; text-align:center; padding:60px;" data-animate>
-      <div style="font-size:4rem; margin-bottom:16px;">✅</div>
-      <h3>All Caught Up!</h3>
-      <p style="color:var(--slate-light);">No pending AI failure reviews. Great work!</p>
-    </div>
-  </main>
 </div>
 
 <script src="/js/app.js"></script>
 <script>
   const session = Session.get();
-  if (!session || session.role !== 'admin') { window.location.href = '/login?role=admin'; }
-  else { document.getElementById('sidebar-nav').innerHTML = getNavHTML('admin', '/admin/review'); }
+  if (!session || session.role !== 'admin') { window.location.href = '/login'; }
 
-  let pendingCount = CivicStore.pendingReviews;
-  let reviewedCount = 12;
-  let trainingCount = CivicStore.trainingData;
+  const nameEl = document.getElementById('admin-name');
+  if (nameEl && session) nameEl.textContent = session.name || session.username;
+
+  let pendingCount   = CivicStore.pendingReviews;
+  let reviewedCount  = 0;
+  let trainingCount  = CivicStore.trainingData;
+  let rejectedCount  = 0;
+
+  const DEMO_REVIEW_ITEMS = [
+    {
+      id: 'rev_001',
+      imageUrl: 'https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?w=400&h=280&fit=crop',
+      confidence: 42,
+      location: 'Sector 7, Rajkot',
+      citizenId: 'citizen_user_42',
+      timestamp: new Date(Date.now() - 3600000).toISOString(),
+      description: 'Something near the road seems damaged',
+      aiLabels: ['outdoor', 'ground', 'surface', 'road']
+    },
+    {
+      id: 'rev_002',
+      imageUrl: 'https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?w=400&h=280&fit=crop',
+      confidence: 58,
+      location: 'Central Market, Rajkot',
+      citizenId: 'citizen_user_88',
+      timestamp: new Date(Date.now() - 7200000).toISOString(),
+      description: 'Garbage piled up in front of market entrance',
+      aiLabels: ['waste', 'debris', 'garbage', 'outdoor']
+    },
+    {
+      id: 'rev_003',
+      imageUrl: 'https://images.unsplash.com/photo-1504309092620-4d0ec726efa4?w=400&h=280&fit=crop',
+      confidence: 35,
+      location: 'NH-27 Near Rajkot',
+      citizenId: 'citizen_user_12',
+      timestamp: new Date(Date.now() - 10800000).toISOString(),
+      description: 'Road issue on highway ramp',
+      aiLabels: ['road', 'highway', 'crack', 'pavement']
+    },
+    {
+      id: 'rev_004',
+      imageUrl: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=280&fit=crop',
+      confidence: 61,
+      location: 'Mavdi Ring Road, Rajkot',
+      citizenId: 'citizen_user_55',
+      timestamp: new Date(Date.now() - 18000000).toISOString(),
+      description: 'Water pooling near Mavdi junction after last night\'s rain',
+      aiLabels: ['water', 'outdoor', 'ground', 'flood']
+    },
+    {
+      id: 'rev_005',
+      imageUrl: 'https://images.unsplash.com/photo-1548613053-22087dd8edb8?w=400&h=280&fit=crop',
+      confidence: 47,
+      location: 'Yagnik Road, Rajkot',
+      citizenId: 'citizen_user_73',
+      timestamp: new Date(Date.now() - 25200000).toISOString(),
+      description: 'Pole seems damaged or leaning oddly',
+      aiLabels: ['pole', 'outdoor', 'infrastructure', 'electrical']
+    }
+  ];
+
+  // Pull from CivicStore or use demo items
+  function getReviewItems() {
+    const storedPending = (CivicStore.myReports || []).filter(r => r.status === 'pending_review');
+    if (storedPending.length > 0) return storedPending;
+    // Use demo items if none in store
+    return DEMO_REVIEW_ITEMS.slice(0, pendingCount > 0 ? Math.max(pendingCount, DEMO_REVIEW_ITEMS.length) : DEMO_REVIEW_ITEMS.length);
+  }
+
+  let reviewItems = getReviewItems();
+
+  const CATEGORIES = [
+    { value: 'pothole',       label: 'Pothole',          color: '#f59e0b' },
+    { value: 'streetlight',   label: 'Broken Streetlight',color: '#fbbf24' },
+    { value: 'waterlogging',  label: 'Waterlogging',     color: '#00d4ff' },
+    { value: 'garbage',       label: 'Garbage / Waste',  color: '#22c55e' },
+    { value: 'sewage',        label: 'Sewage / Drainage', color: '#a855f7' },
+    { value: 'road_damage',   label: 'Road Damage',      color: '#f97316' },
+    { value: 'encroachment',  label: 'Encroachment',     color: '#ef4444' },
+    { value: 'other',         label: 'Other',            color: '#6b7280' },
+  ];
+
+  function getConfidenceBadge(conf) {
+    if (conf >= 70) return `<span style="background:rgba(255,170,0,0.1); color:var(--admin-amber); border:1px solid rgba(255,170,0,0.3); padding:2px 8px; border-radius:4px; font-size:9px; font-family:var(--admin-font-data); font-weight:600; letter-spacing:0.06em;">AI CONF ${conf}% — MEDIUM</span>`;
+    if (conf >= 50) return `<span style="background:rgba(255,102,0,0.1); color:var(--admin-orange); border:1px solid rgba(255,102,0,0.3); padding:2px 8px; border-radius:4px; font-size:9px; font-family:var(--admin-font-data); font-weight:600; letter-spacing:0.06em;">AI CONF ${conf}% — LOW</span>`;
+    return `<span style="background:rgba(255,77,77,0.1); color:var(--admin-red); border:1px solid rgba(255,77,77,0.3); padding:2px 8px; border-radius:4px; font-size:9px; font-family:var(--admin-font-data); font-weight:600; letter-spacing:0.06em; animation:pulse-glow 2s infinite;">AI CONF ${conf}% — CRITICAL LOW</span>`;
+  }
+
+  function getConfBarColor(conf) {
+    if (conf >= 70) return 'var(--admin-amber)';
+    if (conf >= 50) return 'var(--admin-orange)';
+    return 'var(--admin-red)';
+  }
+
+  function renderReviewGrid() {
+    const grid = document.getElementById('review-grid');
+    const emptyState = document.getElementById('empty-state');
+    const active = reviewItems.filter(r => !r._reviewed);
+
+    updateCounters();
+
+    if (active.length === 0) {
+      grid.innerHTML = '';
+      emptyState.style.display = 'block';
+      return;
+    }
+    emptyState.style.display = 'none';
+
+    grid.innerHTML = active.map(item => {
+      const conf = item.confidence || item.aiConfidence || 55;
+      const labels = (item.aiLabels || item.labels || []).join(', ') || 'N/A';
+      const isImage = !!item.imageUrl;
+      const ts = item.timestamp ? new Date(item.timestamp).toLocaleDateString('en-IN', {day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'}) : 'Unknown';
+
+      return `
+        <div class="review-item-card" id="rev-card-${item.id}">
+
+          ${isImage
+            ? `<img src="${item.imageUrl}" alt="Report" class="review-item-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+               <div class="review-item-img-placeholder" style="display:none;">🖼️</div>`
+            : `<div class="review-item-img-placeholder">
+                 <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21,15 16,10 5,21"/></svg>
+               </div>`
+          }
+
+          <div class="review-item-body">
+            <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+              ${getConfidenceBadge(conf)}
+              <span style="font-size:10px; font-family:var(--admin-font-data); color:var(--admin-text-muted);">
+                Report #${item.id.slice(-6).toUpperCase()}
+              </span>
+            </div>
+
+            <div style="font-size:14px; font-weight:600; color:var(--admin-text-primary); font-family:var(--admin-font-ui); line-height:1.3;">
+              ${item.description || 'Unclassified civic issue report'}
+            </div>
+
+            <div style="display:flex; flex-direction:column; gap:4px;">
+              <div style="display:flex; align-items:center; gap:6px; font-size:11px; color:var(--admin-text-secondary);">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                <span>${item.location || item.address || 'Location not specified'}</span>
+              </div>
+              <div style="display:flex; align-items:center; gap:6px; font-size:10px; color:var(--admin-text-muted); font-family:var(--admin-font-data);">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+                <span>${item.citizenId || 'Anonymous'}</span>
+                <span style="color:var(--admin-border);">•</span>
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
+                <span>${ts}</span>
+              </div>
+            </div>
+
+            <!-- Confidence bar -->
+            <div>
+              <div style="display:flex; justify-content:space-between; font-size:9px; font-family:var(--admin-font-data); color:var(--admin-text-muted); margin-bottom:4px;">
+                <span>AI CONFIDENCE</span>
+                <span style="color:${getConfBarColor(conf)};">${conf}%</span>
+              </div>
+              <div class="confidence-bar-wrap">
+                <div class="confidence-bar-fill" style="width:${conf}%; background:${getConfBarColor(conf)};"></div>
+              </div>
+            </div>
+
+            <div style="font-size:10px; font-family:var(--admin-font-data); color:var(--admin-text-muted);">
+              AI DETECTED: <span style="color:var(--admin-text-secondary);">${labels}</span>
+            </div>
+
+            <!-- Category select -->
+            <div>
+              <div style="font-size:9px; font-family:var(--admin-font-data); color:var(--admin-text-muted); text-transform:uppercase; letter-spacing:0.1em; margin-bottom:6px;">Classify As</div>
+              <select class="admin-select" id="cat-${item.id}" style="max-width:280px;">
+                <option value="">— Select Category —</option>
+                ${CATEGORIES.map(c => `<option value="${c.value}">${c.label}</option>`).join('')}
+              </select>
+            </div>
+          </div>
+
+          <div class="review-item-actions">
+            <button class="btn-admin-success" onclick="approveReview('${item.id}')">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20,6 9,17 4,12"/></svg>
+              Approve & Train
+            </button>
+            <button class="btn-admin-danger" onclick="rejectReview('${item.id}')">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              False Report
+            </button>
+            <button class="btn-admin-amber" onclick="escalateReview('${item.id}')">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
+              Escalate
+            </button>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
 
   function updateCounters() {
-    document.getElementById('pending-num').textContent = pendingCount;
-    document.getElementById('reviewed-num').textContent = reviewedCount;
-    document.getElementById('training-num').textContent = trainingCount;
-    document.getElementById('pending-badge').textContent = pendingCount + ' pending';
+    const active = reviewItems.filter(r => !r._reviewed);
+    document.getElementById('stat-pending').textContent = active.length;
+    document.getElementById('stat-reviewed').textContent = reviewedCount;
+    document.getElementById('stat-training').textContent = trainingCount;
+    document.getElementById('stat-rejected').textContent = rejectedCount;
+    document.getElementById('pending-badge').textContent = active.length + ' PENDING';
   }
-  updateCounters();
 
-  function approveReview(cardId, catId) {
-    const cat = document.getElementById(catId).value;
-    if (!cat) { showToast('Please select a category first', 'error'); return; }
+  function approveReview(itemId) {
+    const catEl = document.getElementById('cat-' + itemId);
+    const cat = catEl ? catEl.value : '';
+    if (!cat) {
+      showToast('Please select a category before approving', 'error');
+      catEl.style.borderColor = 'var(--admin-red)';
+      setTimeout(() => { if (catEl) catEl.style.borderColor = ''; }, 2000);
+      return;
+    }
 
-    const card = document.getElementById(cardId);
-    card.style.opacity = '0.5';
-    card.style.transform = 'translateX(50px)';
-    card.style.transition = 'all 0.4s ease';
+    const card = document.getElementById('rev-card-' + itemId);
+    if (card) {
+      card.style.transition = 'all 0.4s ease';
+      card.style.opacity = '0';
+      card.style.transform = 'translateX(60px)';
+    }
 
     setTimeout(() => {
-      card.remove();
-      pendingCount = Math.max(0, pendingCount - 1);
+      const item = reviewItems.find(r => r.id === itemId);
+      if (item) item._reviewed = true;
+
       reviewedCount++;
       trainingCount++;
       CivicStore.resolveReview();
-      updateCounters();
-      showToast(`Classified as "${cat}" — Added to HIGH PRIORITY training data`, 'success');
-      checkEmpty();
+
+      showToast('Classified as "' + cat + '" — Added to training dataset', 'success');
+      renderReviewGrid();
     }, 400);
   }
 
-  function rejectReview(cardId) {
-    const card = document.getElementById(cardId);
-    card.style.opacity = '0.5';
-    card.style.transform = 'translateX(-50px)';
-    card.style.transition = 'all 0.4s ease';
+  function rejectReview(itemId) {
+    const card = document.getElementById('rev-card-' + itemId);
+    if (card) {
+      card.style.transition = 'all 0.4s ease';
+      card.style.opacity = '0';
+      card.style.transform = 'translateX(-60px)';
+    }
 
     setTimeout(() => {
-      card.remove();
-      pendingCount = Math.max(0, pendingCount - 1);
+      const item = reviewItems.find(r => r.id === itemId);
+      if (item) item._reviewed = true;
+
       reviewedCount++;
+      rejectedCount++;
+      pendingCount = Math.max(0, pendingCount - 1);
       CivicStore.pendingReviews = Math.max(0, CivicStore.pendingReviews - 1);
       CivicStore.save();
-      updateCounters();
-      showToast('Marked as false report — Points decay initiated for reporter', 'error');
-      checkEmpty();
+
+      showToast('Marked as false report — Reporter warning initiated', 'error');
+      renderReviewGrid();
     }, 400);
   }
 
-  function checkEmpty() {
-    const cards = document.querySelectorAll('.review-card');
-    if (cards.length === 0) {
-      document.getElementById('empty-state').style.display = 'block';
+  function escalateReview(itemId) {
+    showToast('Report escalated to senior admin review', 'info');
+    const card = document.getElementById('rev-card-' + itemId);
+    if (card) {
+      card.style.borderColor = 'var(--admin-amber)';
+      card.style.transition = 'border-color 0.3s ease';
     }
   }
+
+  // Check for ?id=xxx in URL (from map popup "Review" button)
+  document.addEventListener('DOMContentLoaded', function() {
+    const params = new URLSearchParams(window.location.search);
+    const focusId = params.get('id');
+    if (focusId) {
+      setTimeout(() => {
+        const card = document.getElementById('rev-card-' + focusId);
+        if (card) {
+          card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          card.style.borderColor = 'var(--admin-border-accent)';
+          setTimeout(() => { card.style.borderColor = ''; }, 2000);
+        }
+      }, 300);
+    }
+  });
+
+  renderReviewGrid();
 </script>
 </body>
 </html>

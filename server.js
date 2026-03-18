@@ -80,5 +80,5 @@ Object.entries(pages).forEach(([route, file]) => {
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Civic Nili running on http://localhost:${PORT}`);
+  console.log(`JanSetu AI running on http://localhost:${PORT}`);
 });

@@ -1,4 +1,4 @@
-/* ===== CIVIC NILI - SHARED JS ===== */
+/* ===== JANSETU AI - SHARED JS ===== */
 
 // ===== WARNING SYSTEM CONSTANTS =====
 const WARNING_THRESHOLD_FLAG = 3;
@@ -162,6 +162,63 @@ function initDemoWarningStates() {
   if (!CivicStore.suspensions['suspended_user']) {
     CivicStore.suspensions['suspended_user'] = { suspended: true, reason: 'Automatic: Exceeded false report threshold (5)', date: new Date(Date.now() - 3600000).toISOString(), appealSubmitted: false };
   }
+
+  // --- HACKATHON JURY DEMO DATA FOR RAJKOT ---
+  if (!CivicStore.myReports || CivicStore.myReports.length < 5) {
+    const statuses = ['unresolved', 'in_process', 'resolved', 'pending_review'];
+    const categories = ['pothole', 'garbage', 'streetlight', 'water', 'road', 'dumping', 'graffiti'];
+    
+    // Real coordinates of major public areas/junctions in Rajkot to cluster around
+    const rajkotLocations = [
+      { lat: 22.3050, lng: 70.8030, name: 'Jubilee Garden Area' },
+      { lat: 22.2890, lng: 70.7890, name: 'Kalawad Road' },
+      { lat: 22.2965, lng: 70.7965, name: 'Yagnik Road' },
+      { lat: 22.3160, lng: 70.8050, name: 'Race Course Ring Road' },
+      { lat: 22.3000, lng: 70.7710, name: '150 Feet Ring Road' },
+      { lat: 22.2810, lng: 70.8060, name: 'Bhakti Nagar' },
+      { lat: 22.2740, lng: 70.8250, name: 'Aji Dam Area' },
+      { lat: 22.3300, lng: 70.7780, name: 'Madhapar Chowk' }
+    ];
+    
+    const fakeData = Array.from({ length: 45 }).map((_, i) => {
+      const isCritical = Math.random() > 0.8;
+      const cat = categories[Math.floor(Math.random() * categories.length)];
+      const loc = rajkotLocations[Math.floor(Math.random() * rajkotLocations.length)];
+      
+      // Add a slight random noise (approx 0 to 1.5km spread) around the selected real location cluster
+      const jitterLat = (Math.random() - 0.5) * 0.012; 
+      const jitterLng = (Math.random() - 0.5) * 0.012;
+      
+      return {
+        id: 'DEMO-' + Date.now() + '-' + i,
+        category: cat,
+        status: statuses[Math.floor(Math.random() * statuses.length)],
+        severity: isCritical ? (4 + Math.floor(Math.random()*2)) : (1 + Math.floor(Math.random()*3)), // 1-5
+        lat: (loc.lat + jitterLat).toFixed(6),
+        lng: (loc.lng + jitterLng).toFixed(6),
+        description: `Demo report for ${cat} observed near ${loc.name}. Auto-generated for presentation.`,
+        location: loc.name + ' Vicinity',
+        citizenId: 'citizen_demo',
+        timestamp: new Date(Date.now() - Math.floor(Math.random() * 86400000 * 7)).toISOString(), // Last 7 days
+        imageUrl: null
+      };
+    });
+    
+    // Add some specific high priority ones
+    fakeData.push({
+      id: 'CRIT-1', category: 'water', status: 'unresolved', severity: 5,
+      lat: '22.305000', lng: '70.803000', description: 'Massive waterlogging near Jubilee Garden. Traffic blocked.',
+      location: 'Jubilee Garden', citizenId: 'citizen_demo', timestamp: new Date().toISOString()
+    });
+    fakeData.push({
+      id: 'CRIT-2', category: 'pothole', status: 'in_process', severity: 4,
+      lat: '22.290000', lng: '70.790000', description: 'Deep crater on Kalawad Road causing accidents.',
+      location: 'Kalawad Road', citizenId: 'dev_demo', timestamp: new Date(Date.now() - 3600000).toISOString()
+    });
+    
+    CivicStore.myReports = fakeData;
+  }
+
   CivicStore.save();
 }
 

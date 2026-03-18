@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Report Issue — Civic Nili</title>
+  <title>Report Issue — JanSetu AI</title>
   <link rel="stylesheet" href="/css/styles.css">
 </head>
 <body>
 <nav class="navbar">
   <div class="container">
-    <a href="/citizen/dashboard" class="nav-brand">Civic<span>Nili</span></a>
+    <a href="/citizen/dashboard" class="nav-brand">JanSetu<span>AI</span></a>
     <ul class="nav-links">
       <li><a href="/citizen/dashboard">Dashboard</a></li>
       <li><a href="/citizen/report">Report</a></li>
@@ -70,7 +70,14 @@
 
           <div class="form-group" style="margin-top: 20px;">
             <label>📍 Location</label>
-            <input type="text" class="form-input" id="location" placeholder="e.g. Sector 21, MG Road, Mumbai" value="Sector 21, Mumbai">
+            <div style="display:flex; gap:8px; align-items:center;">
+              <input type="text" class="form-input" id="location" placeholder="Detecting your location..." style="flex:1;">
+              <button type="button" id="detect-loc-btn" onclick="detectLiveLocation()" title="Detect my location"
+                style="flex-shrink:0; padding:10px 14px; background:var(--primary); color:#fff; border:none; border-radius:var(--radius); cursor:pointer; font-size:1rem; display:flex; align-items:center; gap:6px; transition:opacity .2s;">
+                📍 Detect
+              </button>
+            </div>
+            <p id="location-status" style="font-size:.78rem; color:var(--slate-light); margin-top:6px;"></p>
           </div>
 
           <!-- Optional Manual Input -->
@@ -194,6 +201,86 @@
 
 <script src="/js/app.js"></script>
 <script>
+  const GEMINI_API_KEY = 'AIzaSyBdtOQueeNF6biVyE9_dXcGfEod8LAaOe8';
+
+  // ── Live Location Detection ──────────────────────────────────────────────
+  async function detectLiveLocation() {
+    const locInput  = document.getElementById('location');
+    const statusEl  = document.getElementById('location-status');
+    const btn       = document.getElementById('detect-loc-btn');
+
+    if (!navigator.geolocation) {
+      statusEl.textContent = '❌ Geolocation not supported by your browser.';
+      locInput.placeholder = 'Enter location manually';
+      return;
+    }
+
+    btn.disabled = true;
+    btn.style.opacity = '0.6';
+    locInput.value = '';
+    locInput.placeholder = '🔍 Detecting...';
+    statusEl.innerHTML = '<span style="color:var(--primary);">⏳ Getting your GPS coordinates...</span>';
+
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        const { latitude: lat, longitude: lng, accuracy } = pos.coords;
+        statusEl.innerHTML = `<span style="color:var(--primary);">🌐 Coordinates: ${lat.toFixed(5)}, ${lng.toFixed(5)} · Asking Gemini AI for address...</span>`;
+
+        try {
+          const prompt = `You are a precise reverse geocoder. Given these GPS coordinates: latitude ${lat}, longitude ${lng}, return ONLY the human-readable address (locality, city, state, country). Format: "Area/Locality, City, State". Be concise. No extra text, no explanation. Just the address string.`;
+
+          const res = await fetch(
+            `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,
+            {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                contents: [{ parts: [{ text: prompt }] }],
+                generationConfig: { maxOutputTokens: 80, temperature: 0 }
+              })
+            }
+          );
+          const data = await res.json();
+          const address = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+
+          if (address) {
+            locInput.value = address;
+            locInput.placeholder = '';
+            statusEl.innerHTML = `<span style="color:var(--green);">✅ Location detected (±${Math.round(accuracy)}m accuracy)</span>`;
+          } else {
+            locInput.value = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+            statusEl.innerHTML = `<span style="color:var(--amber);">⚠️ Couldn't resolve address — coordinates saved. You can edit manually.</span>`;
+          }
+        } catch (err) {
+          console.error('Gemini geocode error:', err);
+          locInput.value = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+          statusEl.innerHTML = `<span style="color:var(--amber);">⚠️ Address lookup failed — coordinates saved.</span>`;
+        }
+        btn.disabled = false;
+        btn.style.opacity = '1';
+        locInput.placeholder = '';
+      },
+      (err) => {
+        btn.disabled = false;
+        btn.style.opacity = '1';
+        locInput.placeholder = 'Enter location manually';
+        const msgs = {
+          1: '❌ Location permission denied. Please enter address manually.',
+          2: '❌ Position unavailable. Please enter address manually.',
+          3: '❌ Location request timed out. Please enter address manually.'
+        };
+        statusEl.innerHTML = `<span style="color:var(--red);">${msgs[err.code] || '❌ Unable to detect location.'}</span>`;
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+    );
+  }
+
+  // Auto-detect on load
+  window.addEventListener('DOMContentLoaded', () => {
+    detectLiveLocation();
+  });
+
+
   const session = Session.get();
   if (!session || session.role !== 'citizen') { window.location.href = '/login?role=citizen'; }
   else { document.getElementById('sidebar-nav').innerHTML = getNavHTML('citizen', '/citizen/report'); }

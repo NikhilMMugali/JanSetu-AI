@@ -3,102 +3,113 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Flagged Users — Civic Nili</title>
+  <title>Flagged Users — JanSetu AI</title>
   <link rel="stylesheet" href="/css/styles.css">
-  <style>
-    .flagged-card {
-      background: var(--card); border-radius: var(--radius-lg); border: 1px solid var(--border);
-      padding: 20px 24px; margin-bottom: 16px; display: flex; align-items: flex-start;
-      gap: 20px; transition: var(--transition);
-    }
-    .flagged-card:hover { box-shadow: var(--shadow-lg); }
-    .flagged-card.suspended-card { border-left: 4px solid var(--red); }
-    .flagged-card.flagged-only { border-left: 4px solid var(--amber); }
-    .flagged-card.warned-only { border-left: 4px solid var(--amber); border-left-width: 2px; }
-    .user-avatar-lg { width: 52px; height: 52px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1rem; color: #fff; font-weight: 700; flex-shrink: 0; }
-    .warning-pills { display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; }
-    .warning-pill { font-size:.72rem; padding:3px 10px; border-radius:50px; background:rgba(239,68,68,.08); color:var(--red); border:1px solid rgba(239,68,68,.2); }
-    .appeal-box { background:rgba(37,99,235,.05); border:1px solid rgba(37,99,235,.2); border-radius:var(--radius); padding:12px 16px; margin-top:12px; }
-    .tab-btns { display:flex; gap:8px; margin-bottom:24px; flex-wrap:wrap; }
-    .tab-btn { padding:8px 20px; border-radius:50px; font-size:.85rem; font-weight:600; cursor:pointer; border:2px solid var(--border); background:var(--card); color:var(--slate-light); transition:var(--transition); }
-    .tab-btn.active { border-color:var(--primary); color:var(--primary); background:rgba(37,99,235,.06); }
-  </style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/admin.css">
 </head>
-<body>
-<nav class="navbar">
-  <div class="container">
-    <a href="/admin/dashboard" class="nav-brand">Civic<span>Nili</span></a>
-    <ul class="nav-links">
-      <li><a href="/admin/dashboard">Dashboard</a></li>
-      <li><a href="/admin/review">Review Queue</a></li>
-      <li><a href="/admin/flagged">Flagged Users</a></li>
-      <li><a href="/priority">Priority</a></li>
-      <li><a href="#" onclick="logout()" class="btn btn-sm btn-outline">Logout</a></li>
-    </ul>
-    <button class="hamburger" onclick="document.querySelector('.nav-links').classList.toggle('open')"><span></span><span></span><span></span></button>
-  </div>
-</nav>
+<body class="admin-body" style="overflow:hidden; height:100vh;">
 
-<div class="dashboard">
-  <aside class="sidebar"><ul class="sidebar-nav" id="sidebar-nav"></ul></aside>
-  <main class="dash-main">
-    <div class="dash-header" data-animate>
-      <div style="display:flex; align-items:center; gap:16px; flex-wrap:wrap;">
-        <h1>🚩 Flagged Users</h1>
-        <span class="badge badge-red" style="font-size:.9rem; padding:8px 16px;" id="flagged-badge">Loading...</span>
+<div class="admin-scroll-layout">
+
+  <!-- ===== NAV ===== -->
+  <nav class="admin-nav">
+    <div style="display:flex; align-items:center;">
+      <a href="/admin/dashboard" class="admin-nav-brand">
+        JanSetu<span style="color:var(--admin-cyan);">AI</span><span class="sep">|</span><span style="color:var(--admin-text-muted); font-weight:400; font-size:12px; letter-spacing:0.06em;">FLAGGED USERS</span>
+      </a>
+    </div>
+    <div class="admin-nav-center">
+      <div class="live-indicator">LIVE</div>
+      <div class="admin-nav-links">
+        <a href="/admin/dashboard" class="admin-nav-link">Dashboard</a>
+        <a href="/admin/review" class="admin-nav-link">Review Queue</a>
+        <a href="/admin/flagged" class="admin-nav-link active">Flagged Users</a>
+        <a href="/priority" class="admin-nav-link">Priority</a>
+        <a href="/ledger" class="admin-nav-link">Ledger</a>
       </div>
-      <p>Citizens with warnings, flagged accounts, suspensions, and pending appeals</p>
+    </div>
+    <div class="admin-nav-right">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--admin-cyan);"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+      <span id="admin-name" style="color:var(--admin-text-primary);">Admin</span>
+      <a href="#" onclick="logout()" class="admin-signout">SIGN OUT</a>
+    </div>
+  </nav>
+
+  <!-- ===== SCROLLABLE CONTENT ===== -->
+  <div class="admin-scroll-content">
+
+    <!-- Page Header -->
+    <div class="admin-page-header">
+      <div>
+        <div style="display:flex; align-items:center; gap:12px;">
+          <div class="admin-page-title">Citizen Trust & Moderation</div>
+          <span id="flagged-badge" style="background:rgba(255,77,77,0.1); color:var(--admin-red); border:1px solid rgba(255,77,77,0.3); padding:3px 10px; border-radius:4px; font-size:10px; font-family:var(--admin-font-data); font-weight:600; letter-spacing:0.08em; text-transform:uppercase;">0 USERS</span>
+        </div>
+        <div class="admin-page-subtitle">Citizens with warnings, flagged accounts, suspensions, and pending appeals</div>
+      </div>
+      <a href="/admin/dashboard" class="btn-admin-primary" style="text-decoration:none; font-size:11px;">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15,18 9,12 15,6"/></svg>
+        Command Center
+      </a>
     </div>
 
     <!-- Stats -->
-    <div class="stat-cards" data-animate>
-      <div class="stat-card" style="border-left:4px solid var(--red);">
-        <div class="sc-label">Suspended</div>
-        <div class="sc-value" style="color:var(--red);" id="stat-suspended">0</div>
+    <div class="admin-stats-row">
+      <div class="admin-stat-box red">
+        <div class="admin-stat-num red" id="stat-suspended">0</div>
+        <div class="admin-stat-label">Suspended</div>
       </div>
-      <div class="stat-card" style="border-left:4px solid var(--amber);">
-        <div class="sc-label">Flagged (3+ warnings)</div>
-        <div class="sc-value" style="color:var(--amber);" id="stat-flagged">0</div>
+      <div class="admin-stat-box amber" style="--accent:#ffaa00;">
+        <div class="admin-stat-num amber" id="stat-flagged">0</div>
+        <div class="admin-stat-label">Flagged (3+ warns)</div>
       </div>
-      <div class="stat-card" style="border-left:4px solid var(--primary);">
-        <div class="sc-label">Pending Appeals</div>
-        <div class="sc-value" style="color:var(--primary);" id="stat-appeals">0</div>
+      <div class="admin-stat-box cyan">
+        <div class="admin-stat-num cyan" id="stat-appeals">0</div>
+        <div class="admin-stat-label">Pending Appeals</div>
       </div>
-      <div class="stat-card" style="border-left:4px solid var(--green);">
-        <div class="sc-label">Restored Today</div>
-        <div class="sc-value" style="color:var(--green);" id="stat-restored">0</div>
+      <div class="admin-stat-box green">
+        <div class="admin-stat-num green" id="stat-restored">0</div>
+        <div class="admin-stat-label">Restored Today</div>
       </div>
     </div>
 
     <!-- Tabs -->
-    <div class="tab-btns" data-animate>
-      <button class="tab-btn active" onclick="showTab('all', this)">All Flagged</button>
-      <button class="tab-btn" onclick="showTab('suspended', this)">Suspended</button>
-      <button class="tab-btn" onclick="showTab('appeals', this)">Pending Appeals</button>
-      <button class="tab-btn" onclick="showTab('flagged', this)">Flagged Only</button>
+    <div class="admin-tabs">
+      <button class="admin-tab active" onclick="showTab('all', this)">All Flagged</button>
+      <button class="admin-tab" onclick="showTab('suspended', this)">Suspended</button>
+      <button class="admin-tab" onclick="showTab('appeals', this)">Appeals</button>
+      <button class="admin-tab" onclick="showTab('flagged', this)">Flagged Only</button>
     </div>
 
-    <div id="users-list" data-animate>
-      <!-- Populated by JS -->
+    <!-- User List -->
+    <div id="users-list"></div>
+
+    <!-- Empty State -->
+    <div id="empty-state" style="display:none;">
+      <div class="admin-empty-state">
+        <span class="empty-icon">✓</span>
+        <h3>All Clear</h3>
+        <p>No users match this filter criteria.</p>
+      </div>
     </div>
 
-    <div id="empty-state" style="display:none; text-align:center; padding:60px;">
-      <div style="font-size:4rem; margin-bottom:16px;">✅</div>
-      <h3>All Clear</h3>
-      <p style="color:var(--slate-light);">No users match this filter.</p>
-    </div>
-  </main>
+  </div>
 </div>
 
 <script src="/js/app.js"></script>
 <script>
   const session = Session.get();
-  if (!session || session.role !== 'admin') { window.location.href = '/login?role=admin'; }
-  else { document.getElementById('sidebar-nav').innerHTML = getNavHTML('admin', '/admin/flagged'); }
+  if (!session || session.role !== 'admin') { window.location.href = '/login'; }
+
+  const nameEl = document.getElementById('admin-name');
+  if (nameEl && session) nameEl.textContent = session.name || session.username;
 
   let restoredCount = 0;
 
-  // Build user list from USERS + warning data
+  // Build flagged users list from USERS + CivicStore data
   const flaggedUsers = Object.entries(USERS)
     .filter(([uname, u]) => u.role === 'citizen')
     .map(([uname, u]) => {
@@ -109,27 +120,52 @@
     })
     .filter(u => u.warnings.count > 0 || u.suspended);
 
-  // Update stats
+  // Update header stats
   const suspendedCount = flaggedUsers.filter(u => u.suspended).length;
-  const flaggedCount = flaggedUsers.filter(u => u.warnings.flagged && !u.suspended).length;
-  const appealCount = flaggedUsers.filter(u => u.hasAppeal).length;
+  const flaggedCount   = flaggedUsers.filter(u => u.warnings.flagged && !u.suspended).length;
+  const appealCount    = flaggedUsers.filter(u => u.hasAppeal).length;
+
   document.getElementById('stat-suspended').textContent = suspendedCount;
-  document.getElementById('stat-flagged').textContent = flaggedCount;
-  document.getElementById('stat-appeals').textContent = appealCount;
-  document.getElementById('stat-restored').textContent = restoredCount;
-  document.getElementById('flagged-badge').textContent = flaggedUsers.length + ' users';
+  document.getElementById('stat-flagged').textContent   = flaggedCount;
+  document.getElementById('stat-appeals').textContent   = appealCount;
+  document.getElementById('stat-restored').textContent  = restoredCount;
+  document.getElementById('flagged-badge').textContent  = flaggedUsers.length + ' USERS';
 
   let currentTab = 'all';
 
   function showTab(tab, btn) {
     currentTab = tab;
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.admin-tab').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     renderList();
   }
 
+  // Avatar color by username or role
+  const AVATAR_GRADIENTS = {
+    warned_user:    'linear-gradient(135deg, #ffaa00, #f97316)',
+    flagged_user:   'linear-gradient(135deg, #ff4d4d, #a855f7)',
+    suspended_user: 'linear-gradient(135deg, #4a5568, #6b7280)',
+    citizen_demo:   'linear-gradient(135deg, #00d4ff, #22c55e)',
+  };
+  function getAvatarGradient(uname) {
+    if (AVATAR_GRADIENTS[uname]) return AVATAR_GRADIENTS[uname];
+    // Deterministic color from username hash
+    const n = uname.split('').reduce((a, c) => a + c.charCodeAt(0), 0);
+    const hues = [200, 280, 160, 30, 350, 60, 130];
+    const h = hues[n % hues.length];
+    return `linear-gradient(135deg, hsl(${h},70%,40%), hsl(${(h+40)%360},60%,55%))`;
+  }
+
+  const TYPE_LABELS = {
+    wrong_image:    'Wrong Image',
+    inappropriate:  'Inappropriate',
+    false_report:   'False Report'
+  };
+
   function renderList() {
-    const list = document.getElementById('users-list');
+    const list        = document.getElementById('users-list');
+    const emptyState  = document.getElementById('empty-state');
+
     let filtered = flaggedUsers;
     if (currentTab === 'suspended') filtered = flaggedUsers.filter(u => u.suspended);
     else if (currentTab === 'appeals') filtered = flaggedUsers.filter(u => u.hasAppeal);
@@ -137,102 +173,174 @@
 
     if (filtered.length === 0) {
       list.innerHTML = '';
-      document.getElementById('empty-state').style.display = 'block';
+      emptyState.style.display = 'block';
       return;
     }
-    document.getElementById('empty-state').style.display = 'none';
-
-    const avatarColors = {
-      warned_user: 'linear-gradient(135deg,var(--amber),#F97316)',
-      flagged_user: 'linear-gradient(135deg,var(--red),var(--red-light))',
-      suspended_user: 'linear-gradient(135deg,#6B7280,#9CA3AF)',
-    };
-
-    const typeLabels = { wrong_image: 'Wrong Image', inappropriate: 'Inappropriate', false_report: 'False Report' };
+    emptyState.style.display = 'none';
 
     list.innerHTML = filtered.map(u => {
-      const initials = u.name.split(' ').map(n => n[0]).join('').slice(0,2).toUpperCase();
-      const cardClass = u.suspended ? 'suspended-card' : u.warnings.flagged ? 'flagged-only' : 'warned-only';
-      const statusBadge = u.suspended
-        ? '<span class="badge badge-red">🚫 Suspended</span>'
-        : u.warnings.flagged
-        ? '<span class="badge badge-red">🚩 Flagged</span>'
-        : `<span class="badge badge-amber">⚠️ ${u.warnings.count} Warning${u.warnings.count>1?'s':''}</span>`;
+      const initials = u.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+      const cardClass = u.suspended ? 'suspended' : u.warnings.flagged ? 'flagged' : 'warned';
 
-      const recentWarnings = (u.warnings.history || []).slice(0, 3).map(h =>
-        `<span class="warning-pill">${typeLabels[h.type] || '⚠️'} · ${new Date(h.date).toLocaleDateString('en-IN',{day:'numeric',month:'short'})}</span>`
+      // Status tag
+      const tagHtml = u.suspended
+        ? `<span class="warning-tag suspended">Suspended</span>`
+        : u.warnings.flagged
+        ? `<span class="warning-tag flagged">Flagged</span>`
+        : `<span class="warning-tag warned">${u.warnings.count} Warning${u.warnings.count > 1 ? 's' : ''}</span>`;
+
+      // Trust score bar
+      const trustPct = Math.max(0, Math.round((1 - u.warnings.count / 5) * 100));
+      const trustColor = trustPct > 60 ? 'var(--admin-green)' : trustPct > 30 ? 'var(--admin-amber)' : 'var(--admin-red)';
+
+      // Warning history pills (last 3)
+      const pills = (u.warnings.history || []).slice(0, 3).map(h =>
+        `<span class="warning-pill-tag">${TYPE_LABELS[h.type] || h.type} · ${new Date(h.date).toLocaleDateString('en-IN', {day:'numeric', month:'short'})}</span>`
       ).join('');
 
-      const appealSection = u.hasAppeal ? `
-        <div class="appeal-box">
-          <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
-            <div>
-              <strong style="font-size:.85rem;">📬 Pending Appeal</strong>
-              <p style="font-size:.8rem; color:var(--slate-light); margin-top:2px;">${u.appeal.reason.substring(0, 120)}${u.appeal.reason.length > 120 ? '...' : ''}</p>
-              <p style="font-size:.75rem; color:var(--slate-light); margin-top:2px;">Submitted ${new Date(u.appeal.date).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})}</p>
-            </div>
-            <div style="display:flex; gap:8px;">
-              <button class="btn btn-sm btn-teal" onclick="approveAppeal('${u.uname}', this)">✓ Approve & Restore</button>
-              <button class="btn btn-sm btn-red" onclick="denyAppeal('${u.uname}', this)">✗ Deny</button>
-            </div>
-          </div>
-        </div>` : '';
+      // Suspension reason
+      const suspReason = u.suspended && CivicStore.suspensions[u.uname]
+        ? `<div style="font-size:10px; font-family:var(--admin-font-data); color:var(--admin-red); background:rgba(255,77,77,0.05); border:1px solid rgba(255,77,77,0.15); border-radius:5px; padding:5px 8px; margin-top:6px;">
+             REASON: ${CivicStore.suspensions[u.uname].reason || 'N/A'}
+           </div>`
+        : '';
 
-      const actions = u.suspended
-        ? (u.hasAppeal ? '' : `<button class="btn btn-sm btn-teal" onclick="restoreUser('${u.uname}', this)">Restore Account</button>`)
-        : `<button class="btn btn-sm btn-red" onclick="suspendUser('${u.uname}', this)">Suspend</button>`;
+      // Appeal section
+      const appealHtml = u.hasAppeal ? `
+        <div class="appeal-section">
+          <div style="display:flex; align-items:center; gap:6px; margin-bottom:6px;">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--admin-cyan)" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.63A2 2 0 012 1h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 8.91a16 16 0 006.18 6.18l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+            <span style="font-size:11px; font-weight:600; color:var(--admin-cyan); font-family:var(--admin-font-ui);">Pending Appeal</span>
+            <span style="font-size:9px; color:var(--admin-text-muted); font-family:var(--admin-font-data);">${new Date(u.appeal.date).toLocaleDateString('en-IN', {day:'numeric', month:'short', year:'numeric'})}</span>
+          </div>
+          <p style="font-size:11px; color:var(--admin-text-secondary); font-family:var(--admin-font-ui); line-height:1.4; margin:0 0 10px 0;">
+            "${u.appeal.reason.substring(0, 160)}${u.appeal.reason.length > 160 ? '…' : ''}"
+          </p>
+          <div style="display:flex; gap:8px;">
+            <button class="btn-admin-success" style="font-size:11px; padding:5px 12px;" onclick="approveAppeal('${u.uname}', this)">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20,6 9,17 4,12"/></svg>
+              Approve & Restore
+            </button>
+            <button class="btn-admin-danger" style="font-size:11px; padding:5px 12px;" onclick="denyAppeal('${u.uname}', this)">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              Deny Appeal
+            </button>
+          </div>
+        </div>
+      ` : '';
+
+      // Action buttons
+      let actionsHtml = '';
+      if (u.suspended) {
+        if (!u.hasAppeal) {
+          actionsHtml = `
+            <button class="btn-admin-success" style="font-size:11px; white-space:nowrap;" onclick="restoreUser('${u.uname}', this)">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9,14 4,9 9,4"/><path d="M20 20v-7a4 4 0 00-4-4H4"/></svg>
+              Restore Account
+            </button>
+          `;
+        }
+      } else {
+        actionsHtml = `
+          <button class="btn-admin-danger" style="font-size:11px; white-space:nowrap;" onclick="suspendUser('${u.uname}', this)">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+            Suspend
+          </button>
+          <button class="btn-admin-amber" style="font-size:11px; white-space:nowrap; margin-top:6px;" onclick="issueWarningManual('${u.uname}', this)">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
+            Warn
+          </button>
+        `;
+      }
 
       return `
-        <div class="flagged-card ${cardClass}" id="card-${u.uname}">
-          <div class="user-avatar-lg" style="background:${avatarColors[u.uname] || 'var(--gradient-primary)'};">${initials}</div>
+        <div class="flagged-user-card ${cardClass}" id="card-${u.uname}">
+
+          <div class="user-avatar-admin" style="background:${getAvatarGradient(u.uname)};">
+            ${initials}
+          </div>
+
           <div style="flex:1; min-width:0;">
-            <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:4px;">
-              <strong>${u.name}</strong>
-              <span style="font-size:.8rem; color:var(--slate-light);">@${u.uname}</span>
-              ${statusBadge}
+            <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:4px;">
+              <span style="font-size:14px; font-weight:600; color:var(--admin-text-primary); font-family:var(--admin-font-ui);">${u.name}</span>
+              <span style="font-size:10px; color:var(--admin-text-muted); font-family:var(--admin-font-data);">@${u.uname}</span>
+              ${tagHtml}
             </div>
-            <p style="font-size:.8rem; color:var(--slate-light);">📍 ${u.city} · ${u.warnings.count} of 5 warnings</p>
-            <div class="warning-pills">${recentWarnings}</div>
-            ${appealSection}
+
+            <div style="display:flex; align-items:center; gap:12px; font-size:10px; color:var(--admin-text-muted); font-family:var(--admin-font-data); margin-bottom:6px;">
+              <span>
+                <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle; margin-right:3px;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                ${u.city}
+              </span>
+              <span>${u.warnings.count} of 5 warnings</span>
+              <div style="display:flex; align-items:center; gap:5px;">
+                <span>TRUST</span>
+                <div style="width:50px; height:3px; background:rgba(255,255,255,0.06); border-radius:2px; overflow:hidden;">
+                  <div style="width:${trustPct}%; height:100%; background:${trustColor}; border-radius:2px;"></div>
+                </div>
+                <span style="color:${trustColor};">${trustPct}%</span>
+              </div>
+            </div>
+
+            ${suspReason}
+
+            <div class="warning-pills-row">${pills}</div>
+
+            ${appealHtml}
           </div>
-          <div style="display:flex; flex-direction:column; gap:8px; flex-shrink:0;">
-            ${actions}
+
+          <div style="display:flex; flex-direction:column; gap:0; flex-shrink:0; min-width:130px;">
+            ${actionsHtml}
           </div>
-        </div>`;
+
+        </div>
+      `;
     }).join('');
   }
 
-  function restoreUser(uname, btn) {
+  function restoreUser(uname) {
     CivicStore.restoreUser(uname);
     restoredCount++;
     document.getElementById('stat-restored').textContent = restoredCount;
-    showToast(`${USERS[uname].name} account restored`, 'success');
-    document.getElementById('card-' + uname).style.opacity = '0.4';
-    setTimeout(() => renderList(), 600);
+    showToast(USERS[uname].name + ' account restored to good standing', 'success');
+    const card = document.getElementById('card-' + uname);
+    if (card) {
+      card.style.transition = 'all 0.4s ease';
+      card.style.opacity = '0.3';
+    }
+    setTimeout(() => renderList(), 500);
   }
 
-  function suspendUser(uname, btn) {
+  function suspendUser(uname) {
     CivicStore.suspendUser(uname, 'Manual suspension by admin');
-    showToast(`${USERS[uname].name} has been suspended`, 'error');
+    showToast(USERS[uname].name + ' has been suspended', 'error');
     renderList();
   }
 
-  function approveAppeal(uname, btn) {
-    const appealIdx = CivicStore.appeals.findIndex(a => a.username === uname && a.status === 'pending');
-    if (appealIdx > -1) CivicStore.appeals[appealIdx].status = 'approved';
+  function issueWarningManual(uname) {
+    CivicStore.issueWarning(uname, 'Manual warning issued by admin', 'false_report');
+    showToast('Warning issued to ' + USERS[uname].name, 'info');
+    renderList();
+  }
+
+  function approveAppeal(uname) {
+    const idx = CivicStore.appeals.findIndex(a => a.username === uname && a.status === 'pending');
+    if (idx > -1) CivicStore.appeals[idx].status = 'approved';
     CivicStore.restoreUser(uname);
     CivicStore.save();
     restoredCount++;
     document.getElementById('stat-restored').textContent = restoredCount;
-    showToast(`Appeal approved — ${USERS[uname].name} restored`, 'success');
-    setTimeout(() => renderList(), 400);
+    document.getElementById('stat-appeals').textContent = Math.max(0, parseInt(document.getElementById('stat-appeals').textContent) - 1);
+    showToast('Appeal approved — ' + USERS[uname].name + ' restored to good standing', 'success');
+    setTimeout(() => renderList(), 300);
   }
 
-  function denyAppeal(uname, btn) {
-    const appealIdx = CivicStore.appeals.findIndex(a => a.username === uname && a.status === 'pending');
-    if (appealIdx > -1) CivicStore.appeals[appealIdx].status = 'denied';
+  function denyAppeal(uname) {
+    const idx = CivicStore.appeals.findIndex(a => a.username === uname && a.status === 'pending');
+    if (idx > -1) CivicStore.appeals[idx].status = 'denied';
     CivicStore.save();
-    showToast(`Appeal denied for ${USERS[uname].name}`, 'error');
+    document.getElementById('stat-appeals').textContent = Math.max(0, parseInt(document.getElementById('stat-appeals').textContent) - 1);
+    showToast('Appeal denied for ' + USERS[uname].name, 'error');
     renderList();
   }
 

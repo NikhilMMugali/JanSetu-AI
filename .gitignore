@@ -12,15 +12,15 @@ coverage
 
 # logs
 logs
-_.log
-report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
+*.log
+report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
 # dotenv environment variable files
-# .env # Removed by Orchids to allow .env files
-# .env.development.local # Removed by Orchids to allow .env files
-# .env.test.local # Removed by Orchids to allow .env files
-# .env.production.local # Removed by Orchids to allow .env files
-# .env.local # Removed by Orchids to allow .env files
+.env
+.env.development.local
+.env.test.local
+.env.production.local
+.env.local
 
 # caches
 .eslintcache
