@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flagged Users — JanSetu AI</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body class="admin-body">
+<nav class="admin-nav">
+  <div style="flex:1;"><a href="/admin/dashboard" class="admin-nav-brand">JanSetu<span style="color:var(--admin-cyan);">AI</span></a></div>
+  <div style="display:flex; gap:16px; align-items:center;">
+    <a href="/admin/dashboard">Dashboard</a>
+    <a href="/admin/flagged">Flagged Users</a>
+    <a href="#" onclick="logout()">Logout</a>
+  </div>
+</nav>
+
+<div style="padding:20px;">
+  <div style="max-width:1200px; margin:0 auto;">
+    <h1>🚩 Flagged Users</h1>
+    <p style="color:var(--slate-light);">Users with multiple warnings requiring monitoring</p>
+    <div class="card" style="margin-top:20px; text-align:center; padding:40px;">
+      <div style="font-size:2rem; margin-bottom:12px;">✓</div>
+      <p style="color:var(--slate-light);">No flagged users at this time. Community is in good standing.</p>
+    </div>
+  </div>
+</div>
+
+<script src="/js/app.js"></script>
+<script>
+  const session = Session.get();
+  if (!session || session.role !== 'admin') { window.location.href = '/login?role=admin'; }
+</script>
+</body>
+</html>

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login — JanSetu AI</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+<nav class="navbar">
+  <div class="container">
+    <a href="/" class="nav-brand">JanSetu<span>AI</span></a>
+    <ul class="nav-links">
+      <li><a href="/">Home</a></li>
+      <li><a href="/#portals">Portals</a></li>
+    </ul>
+    <button class="hamburger" onclick="document.querySelector('.nav-links').classList.toggle('open')"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<div class="login-page">
+  <div class="login-box" data-animate>
+    <h2>Welcome Back</h2>
+    <p class="login-sub">Sign in to your JanSetu AI account</p>
+
+    <div class="form-group">
+      <label>Portal</label>
+      <select class="form-select" id="role-select">
+        <option value="citizen">🏙️ Citizen Portal</option>
+        <option value="admin">🏛️ Municipal Admin Portal</option>
+        <option value="developer">⚙️ Developer Admin Portal</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Username</label>
+      <input type="text" class="form-input" id="username" placeholder="Enter username">
+    </div>
+
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" class="form-input" id="password" placeholder="Enter password">
+    </div>
+
+    <div id="2fa-section" style="display:none;" class="form-group">
+      <label>🔐 2FA Code (simulated)</label>
+      <input type="text" class="form-input" id="twofa" placeholder="Enter any 6 digits" maxlength="6">
+    </div>
+
+    <div id="login-error" style="display:none; color: var(--red); font-size:.85rem; margin-bottom:16px; padding: 10px; background: rgba(239,68,68,.08); border-radius: 8px;"></div>
+
+    <button class="btn btn-primary btn-lg" style="width:100%; justify-content:center;" onclick="handleLogin()">
+      Sign In →
+    </button>
+
+      <div class="demo-box">
+        <h4>🧪 Demo Accounts</h4>
+        <div class="cred" onclick="fillDemo('citizen_demo','demo123','citizen')" style="cursor:pointer; padding:6px; border-radius:6px; transition: all .2s;">
+          <strong>Citizen:</strong> citizen_demo / demo123 <span style="color:var(--green); font-size:.8rem;">✅ Good Standing</span>
+        </div>
+        <div class="cred" onclick="fillDemo('admin_demo','demo123','admin')" style="cursor:pointer; padding:6px; border-radius:6px; transition: all .2s;">
+          <strong>Admin:</strong> admin_demo / demo123 <span style="color:var(--amber);">🔐</span>
+        </div>
+        <div class="cred" onclick="fillDemo('dev_demo','demo123','developer')" style="cursor:pointer; padding:6px; border-radius:6px; transition: all .2s;">
+          <strong>Developer:</strong> dev_demo / demo123 <span style="color:var(--teal);">🛡️</span>
+        </div>
+      </div>
+  </div>
+</div>
+
+<script src="/js/app.js"></script>
+<script>
+  // Pre-select role from URL
+  const params = new URLSearchParams(window.location.search);
+  const role = params.get('role');
+  if (role) document.getElementById('role-select').value = role;
+
+  document.getElementById('role-select').addEventListener('change', function() {
+    document.getElementById('2fa-section').style.display = this.value === 'admin' ? 'block' : 'none';
+  });
+  // Trigger on load
+  if (document.getElementById('role-select').value === 'admin') {
+    document.getElementById('2fa-section').style.display = 'block';
+  }
+
+    function fillDemo(u, p, r) {
+      document.getElementById('username').value = u;
+      document.getElementById('password').value = p;
+      document.getElementById('role-select').value = r;
+      document.getElementById('role-select').dispatchEvent(new Event('change'));
+      if (r === 'admin') document.getElementById('twofa').value = '123456';
+      document.getElementById('login-error').style.display = 'none';
+    }
+
+    function handleLogin() {
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value.trim();
+      const selectedRole = document.getElementById('role-select').value;
+      const errEl = document.getElementById('login-error');
+
+      errEl.style.display = 'none';
+
+      if (!username || !password) {
+        errEl.textContent = 'Please enter username and password.';
+        errEl.style.display = 'block';
+        return;
+      }
+
+      if (selectedRole === 'admin') {
+        const twofa = document.getElementById('twofa').value.trim();
+        if (twofa.length < 4) {
+          errEl.textContent = '2FA code required for admin access.';
+          errEl.style.display = 'block';
+          return;
+        }
+      }
+
+      const result = login(username, password);
+      if (result.success) {
+        const session = Session.get();
+        if (session.role !== selectedRole) {
+          errEl.textContent = 'This account does not have access to the selected portal.';
+          errEl.style.display = 'block';
+          Session.clear();
+          return;
+        }
+        const routes = { citizen: '/citizen/dashboard', admin: '/admin/dashboard', developer: '/dev/dashboard' };
+        showToast('Login successful! Redirecting...', 'success');
+        setTimeout(() => { window.location.href = routes[result.role]; }, 500);
+      } else {
+        errEl.textContent = 'Invalid credentials. Try the demo accounts below.';
+        errEl.style.display = 'block';
+      }
+    }
+
+  // Enter key
+  document.querySelectorAll('.form-input').forEach(el => {
+    el.addEventListener('keypress', e => { if (e.key === 'Enter') handleLogin(); });
+  });
+</script>
+</body>
+</html>

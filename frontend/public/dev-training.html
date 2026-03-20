@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Training Data — JanSetu AI</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+<nav class="navbar">
+  <div class="container">
+    <a href="/dev/dashboard" class="nav-brand">JanSetu<span>AI</span></a>
+    <ul class="nav-links">
+      <li><a href="/dev/dashboard">Dashboard</a></li>
+      <li><a href="/dev/training">Training</a></li>
+      <li><a href="#" onclick="logout()" class="btn btn-sm btn-outline">Logout</a></li>
+    </ul>
+    <button class="hamburger" onclick="document.querySelector('.nav-links').classList.toggle('open')"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<div class="dashboard">
+  <aside class="sidebar"><ul class="sidebar-nav" id="sidebar-nav"></ul></aside>
+  <main class="dash-main">
+    <div class="dash-header">
+      <h1>📚 Training Data Management</h1>
+      <p>ML datasets for model improvement</p>
+    </div>
+    <div class="card" style="text-align:center; padding:40px;">
+      <p style="color:var(--slate-light);">Training data management system</p>
+    </div>
+  </main>
+</div>
+
+<script src="/js/app.js"></script>
+<script>
+  const session = Session.get();
+  if (!session || session.role !== 'developer') { window.location.href = '/login?role=developer'; }
+  else { document.getElementById('sidebar-nav').innerHTML = getNavHTML('developer', '/dev/training'); }
+</script>
+</body>
+</html>

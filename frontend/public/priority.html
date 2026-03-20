@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Priority Engine — JanSetu AI</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <style>
+    .gauge-container { display: flex; justify-content: center; gap: 40px; flex-wrap: wrap; margin: 40px 0; }
+    .gauge-wrap { text-align: center; }
+    .gauge-ring {
+      width: 160px; height: 160px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 12px;
+      transition: all 1.5s cubic-bezier(.4,0,.2,1);
+    }
+    .gauge-inner {
+      width: 128px; height: 128px; border-radius: 50%; background: var(--card);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+    }
+    .gauge-val { font-family: 'Space Grotesk'; font-size: 2rem; font-weight: 800; }
+    .gauge-lbl { font-size: .75rem; color: var(--slate-light); }
+    .flow-visual {
+      display: flex; align-items: center; justify-content: center; gap: 0; flex-wrap: wrap;
+      padding: 40px 0;
+    }
+    .flow-node {
+      padding: 16px 24px; border-radius: var(--radius); text-align: center;
+      font-weight: 600; font-size: .85rem; transition: var(--transition);
+      min-width: 140px;
+    }
+    .flow-node:hover { transform: scale(1.05); }
+    .flow-arrow { font-size: 1.5rem; color: var(--slate-light); padding: 0 8px; }
+    .live-issue {
+      background: var(--card); border-radius: var(--radius-lg); padding: 24px;
+      border: 1px solid var(--border); margin-bottom: 16px;
+      display: grid; grid-template-columns: 1fr 200px; gap: 24px; align-items: center;
+      transition: var(--transition);
+    }
+    .live-issue:hover { box-shadow: var(--shadow-lg); border-color: var(--primary); }
+    .score-bar { height: 32px; background: var(--bg); border-radius: 50px; overflow: hidden; position: relative; }
+    .score-bar-fill { height: 100%; border-radius: 50px; display: flex; align-items: center; justify-content: flex-end; padding-right: 12px; color: #fff; font-weight: 700; font-size: .8rem; transition: width 1.5s cubic-bezier(.4,0,.2,1); width: 0; }
+  </style>
+</head>
+<body>
+<nav class="navbar">
+  <div class="container">
+    <a href="/" class="nav-brand">JanSetu<span>AI</span></a>
+    <ul class="nav-links">
+      <li><a href="/">Home</a></li>
+      <li><a href="/priority">Priority</a></li>
+      <li><a href="/ledger">Ledger</a></li>
+      <li><a href="/login" class="btn btn-sm btn-primary">Login</a></li>
+    </ul>
+    <button class="hamburger" onclick="document.querySelector('.nav-links').classList.toggle('open')"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<div style="padding-top: 100px;">
+  <!-- Hero Section -->
+  <section class="section-sm" style="background: var(--gradient-hero); color: #fff;">
+    <div class="container text-center">
+      <span class="section-tag" style="background: rgba(37,99,235,.2); color: var(--primary-light);" data-animate>Smart Prioritization</span>
+      <h1 style="color:#fff; font-size: 2.8rem; margin: 16px 0;" data-animate data-delay="100">Priority Engine</h1>
+      <p style="color:rgba(255,255,255,.6); max-width:600px; margin:0 auto;" data-animate data-delay="200">Our smart scoring system combines multiple signals to ensure the most critical issues get attention first.</p>
+    </div>
+  </section>
+
+  <!-- Scoring Factors -->
+  <section class="section">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag" data-animate>Scoring Factors</span>
+        <h2 data-animate data-delay="100">What Drives Priority?</h2>
+        <p data-animate data-delay="200">Multiple signals are weighted and combined to create a dynamic priority score.</p>
+      </div>
+
+      <div style="max-width: 600px; margin: 0 auto;">
+        <div class="priority-bar-group" data-animate>
+          <div class="priority-bar-label"><span>🔴 AI Severity Assessment</span><span>35%</span></div>
+          <div class="priority-bar"><div class="priority-bar-fill" data-width="35%" style="background: linear-gradient(90deg, var(--red), #F97316);"></div></div>
+        </div>
+        <div class="priority-bar-group" data-animate data-delay="100">
+          <div class="priority-bar-label"><span>🗳️ Community Votes</span><span>25%</span></div>
+          <div class="priority-bar"><div class="priority-bar-fill" data-width="25%" style="background: var(--gradient-primary);"></div></div>
+        </div>
+        <div class="priority-bar-group" data-animate data-delay="200">
+          <div class="priority-bar-label"><span>📍 Location Impact</span><span>20%</span></div>
+          <div class="priority-bar"><div class="priority-bar-fill" data-width="20%" style="background: linear-gradient(90deg, var(--teal), var(--teal-light));"></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-bottom" style="border:none; padding:0;">
+      <span>© 2026 JanSetu AI</span>
+      <span>Built with ❤️ for better cities</span>
+    </div>
+  </div>
+</footer>
+
+<script src="/js/app.js"></script>
+</body>
+</html>

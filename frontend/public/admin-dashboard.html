@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard — JanSetu AI</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body class="admin-body">
+<nav class="admin-nav">
+  <div style="flex:1;">
+    <a href="/admin/dashboard" class="admin-nav-brand">JanSetu<span style="color:var(--admin-cyan);">AI</span></a>
+  </div>
+  <div style="display:flex; gap:16px; align-items:center;">
+    <a href="/admin/dashboard">Dashboard</a>
+    <a href="/admin/review">Review Queue</a>
+    <a href="/priority">Priority</a>
+    <a href="#" onclick="logout()" style="margin-left:auto;">Logout</a>
+  </div>
+</nav>
+
+<div style="padding:20px;">
+  <div style="max-width:1200px; margin:0 auto;">
+    <h1>🛡️ Admin Dashboard</h1>
+    <p style="color:var(--slate-light); margin-bottom:24px;">Review issues, manage users, and monitor civic activity</p>
+
+    <div class="stat-cards">
+      <div class="stat-card">
+        <div class="sc-label">Total Reports</div>
+        <div class="sc-value" style="color:var(--cyan);" data-count="847">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="sc-label">Pending Review</div>
+        <div class="sc-value" style="color:var(--amber);" data-count="12">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="sc-label">Resolved Today</div>
+        <div class="sc-value" style="color:var(--green);" data-count="34">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="sc-label">Flagged Users</div>
+        <div class="sc-value" style="color:var(--red);" data-count="3">0</div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:24px;">
+      <h4>Recent Reports Needing Review</h4>
+      <p style="font-size:.9rem; color:var(--slate-light); margin:12px 0 20px;">No critical issues requiring immediate review. All systems nominal.</p>
+      <a href="/admin/review" class="btn btn-primary">Go to Review Queue →</a>
+    </div>
+  </div>
+</div>
+
+<script src="/js/app.js"></script>
+<script>
+  const session = Session.get();
+  if (!session || session.role !== 'admin') { window.location.href = '/login?role=admin'; }
+</script>
+</body>
+</html>

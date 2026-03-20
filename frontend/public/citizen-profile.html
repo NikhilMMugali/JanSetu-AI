@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Profile — JanSetu AI</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+<nav class="navbar">
+  <div class="container">
+    <a href="/citizen/dashboard" class="nav-brand">JanSetu<span>AI</span></a>
+    <ul class="nav-links">
+      <li><a href="/citizen/dashboard">Dashboard</a></li>
+      <li><a href="/citizen/report">Report</a></li>
+      <li><a href="/citizen/voting">Voting</a></li>
+      <li><a href="/citizen/profile">Profile</a></li>
+      <li><a href="#" onclick="logout()" class="btn btn-sm btn-outline">Logout</a></li>
+    </ul>
+    <button class="hamburger" onclick="document.querySelector('.nav-links').classList.toggle('open')"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<div class="dashboard">
+  <aside class="sidebar"><ul class="sidebar-nav" id="sidebar-nav"></ul></aside>
+  <main class="dash-main">
+    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; margin-bottom: 32px;">
+      <!-- Points -->
+      <div class="card text-center" data-animate>
+        <h4 style="margin-bottom: 16px;">Points Balance</h4>
+        <div style="font-family:'Space Grotesk'; font-size:2.5rem; font-weight:800; color:var(--green); margin:16px 0;">1,250</div>
+        <p style="font-size: .85rem; color: var(--slate-light);">Top 17% of citizens</p>
+      </div>
+
+      <!-- Trust Score -->
+      <div class="card text-center" data-animate data-delay="100">
+        <h4 style="margin-bottom: 16px;">Trust Score</h4>
+        <div style="font-family:'Space Grotesk'; font-size:2.5rem; font-weight:800; color:var(--teal); margin:16px 0;">92%</div>
+        <p style="font-size: .85rem; font-weight: 600; color: var(--teal);">Excellent</p>
+      </div>
+
+      <!-- Stats -->
+      <div class="card" data-animate data-delay="200">
+        <h4 style="margin-bottom: 16px;">My Stats</h4>
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+          <div style="display: flex; justify-content: space-between;">
+            <span style="color: var(--slate-light); font-size: .9rem;">Reports Filed</span>
+            <strong>7</strong>
+          </div>
+          <div style="display: flex; justify-content: space-between;">
+            <span style="color: var(--slate-light); font-size: .9rem;">Resolved</span>
+            <strong style="color: var(--green);">5</strong>
+          </div>
+          <div style="display: flex; justify-content: space-between;">
+            <span style="color: var(--slate-light); font-size: .9rem;">Votes Cast</span>
+            <strong>34</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- History -->
+    <div class="card" data-animate>
+      <h4 style="margin-bottom: 16px;">Contribution History</h4>
+      <div style="padding: 16px 24px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px;">
+        <span style="font-size:1.2rem;">📝</span>
+        <div style="flex:1;"><strong>Reported: Large Pothole on MG Road</strong><p style="font-size:.85rem; color:var(--slate-light); margin-top:2px;">Sector 21, Mumbai • 2 hours ago</p></div>
+        <div style="color: var(--green); font-weight:600;">+10</div>
+      </div>
+      <div style="padding: 16px 24px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px;">
+        <span style="font-size:1.2rem;">🗳️</span>
+        <div style="flex:1;"><strong>Voted on: Water Pipeline Leakage</strong><p style="font-size:.85rem; color:var(--slate-light); margin-top:2px;">Sector 14, Mumbai • 5 hours ago</p></div>
+        <div style="color: var(--green); font-weight:600;">+5</div>
+      </div>
+      <div style="padding: 16px 24px; display: flex; align-items: center; gap: 12px;">
+        <span style="font-size:1.2rem;">✅</span>
+        <div style="flex:1;"><strong>Resolved: Broken Streetlight</strong><p style="font-size:.85rem; color:var(--slate-light); margin-top:2px;">Park Avenue, Mumbai • 3 days ago</p></div>
+        <div style="color: var(--green); font-weight:600;">+25</div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="/js/app.js"></script>
+<script>
+  const session = Session.get();
+  if (!session || session.role !== 'citizen') { window.location.href = '/login?role=citizen'; }
+  else {
+    document.getElementById('sidebar-nav').innerHTML = getNavHTML('citizen', '/citizen/profile');
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Warning History — JanSetu AI</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+<nav class="navbar">
+  <div class="container">
+    <a href="/citizen/dashboard" class="nav-brand">JanSetu<span>AI</span></a>
+    <ul class="nav-links">
+      <li><a href="/citizen/dashboard">Dashboard</a></li>
+      <li><a href="/citizen/report">Report</a></li>
+      <li><a href="/citizen/voting">Voting</a></li>
+      <li><a href="/citizen/profile">Profile</a></li>
+      <li><a href="#" onclick="logout()" class="btn btn-sm btn-outline">Logout</a></li>
+    </ul>
+    <button class="hamburger" onclick="document.querySelector('.nav-links').classList.toggle('open')"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<div class="dashboard">
+  <aside class="sidebar"><ul class="sidebar-nav" id="sidebar-nav"></ul></aside>
+  <main class="dash-main">
+    <div class="dash-header" data-animate>
+      <h1>⚠️ Warning History</h1>
+      <p>View your warning record and account standing</p>
+    </div>
+
+    <!-- Status Banner -->
+    <div id="status-banner" class="card" data-animate style="background: rgba(16,185,129,.05); border: 2px solid var(--green); margin-bottom: 28px;">
+      <div style="display:flex; align-items:center; gap:16px;">
+        <span style="font-size:2.5rem;">✅</span>
+        <div style="flex:1;">
+          <h3 style="margin-bottom:4px; color:var(--green);">Account in Good Standing</h3>
+          <p style="font-size:.9rem; color:var(--slate-light);">No warnings on your record. Keep reporting valid civic issues!</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats Row -->
+    <div class="stat-cards" style="margin-bottom:28px;" data-animate>
+      <div class="stat-card" style="border-left:4px solid var(--red);">
+        <div class="sc-label">Total Warnings</div>
+        <div class="sc-value" style="color:var(--red);">0</div>
+      </div>
+      <div class="stat-card" style="border-left:4px solid var(--amber);">
+        <div class="sc-label">Remaining Before Suspend</div>
+        <div class="sc-value" style="color:var(--amber);">5</div>
+      </div>
+      <div class="stat-card" style="border-left:4px solid var(--primary);">
+        <div class="sc-label">Account Status</div>
+        <div class="sc-value" style="font-size:1.1rem; padding-top:4px;"><span class="badge badge-green">Good Standing</span></div>
+      </div>
+    </div>
+
+    <!-- Warning Details -->
+    <div class="card" data-animate>
+      <h4 style="margin-bottom:16px;">How the Warning System Works</h4>
+      <div style="display:flex; flex-direction:column; gap:12px;">
+        <div style="display:flex; gap:12px; padding:12px; background:rgba(16,185,129,.04); border-radius:var(--radius); border:1px solid rgba(16,185,129,.15);">
+          <span style="font-size:1.2rem;">✅</span>
+          <div><strong style="font-size:.9rem;">0 Warnings</strong> — Good standing. Report freely.</div>
+        </div>
+        <div style="display:flex; gap:12px; padding:12px; background:rgba(245,158,11,.04); border-radius:var(--radius); border:1px solid rgba(245,158,11,.15);">
+          <span style="font-size:1.2rem;">⚠️</span>
+          <div><strong style="font-size:.9rem;">1–2 Warnings</strong> — Caution. Review what makes a valid civic report.</div>
+        </div>
+        <div style="display:flex; gap:12px; padding:12px; background:rgba(239,68,68,.04); border-radius:var(--radius); border:1px solid rgba(239,68,68,.15);">
+          <span style="font-size:1.2rem;">🚩</span>
+          <div><strong style="font-size:.9rem;">3–4 Warnings (Flagged)</strong> — Account flagged. Admin is monitoring your activity.</div>
+        </div>
+        <div style="display:flex; gap:12px; padding:12px; background:rgba(239,68,68,.06); border-radius:var(--radius); border:1px solid rgba(239,68,68,.2);">
+          <span style="font-size:1.2rem;">🚫</span>
+          <div><strong style="font-size:.9rem;">5 Warnings (Suspended)</strong> — Account suspended. Submit an appeal for review.</div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="/js/app.js"></script>
+<script>
+  const session = Session.get();
+  if (!session || session.role !== 'citizen') { window.location.href = '/login?role=citizen'; }
+  else { document.getElementById('sidebar-nav').innerHTML = getNavHTML('citizen', '/citizen/warnings'); }
+</script>
+</body>
+</html>

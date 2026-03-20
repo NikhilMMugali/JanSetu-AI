@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>National Ledger — JanSetu AI</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <style>
+    .ledger-hero { background: var(--gradient-hero); color: #fff; padding: 60px 0; }
+    .city-rank { font-family: 'Space Grotesk'; font-weight: 700; font-size: .9rem; color: var(--slate-light); margin-bottom: 8px; }
+    .city-progress { height: 8px; background: var(--border); border-radius: 50px; overflow: hidden; margin-top: 12px; }
+    .city-progress-fill { height: 100%; border-radius: 50px; transition: width 1.5s cubic-bezier(.4,0,.2,1); width: 0; }
+    .timeline-item { display: flex; gap: 16px; padding: 16px 0; border-bottom: 1px solid var(--border); }
+    .timeline-dot { width: 12px; height: 12px; border-radius: 50%; margin-top: 4px; flex-shrink: 0; }
+  </style>
+</head>
+<body>
+<nav class="navbar">
+  <div class="container">
+    <a href="/" class="nav-brand">JanSetu<span>AI</span></a>
+    <ul class="nav-links">
+      <li><a href="/">Home</a></li>
+      <li><a href="/priority">Priority</a></li>
+      <li><a href="/ledger">Ledger</a></li>
+      <li><a href="/login" class="btn btn-sm btn-primary">Login</a></li>
+    </ul>
+    <button class="hamburger" onclick="document.querySelector('.nav-links').classList.toggle('open')"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<div style="padding-top: 72px;">
+  <!-- Hero -->
+  <section class="ledger-hero">
+    <div class="container text-center">
+      <span class="section-tag" style="background: rgba(37,99,235,.2); color: var(--primary-light);" data-animate>Transparency</span>
+      <h1 style="color:#fff; font-size: 2.8rem; margin: 16px 0;" data-animate data-delay="100">National Civic Ledger</h1>
+      <p style="color:rgba(255,255,255,.6); max-width:600px; margin:0 auto;" data-animate data-delay="200">A transparent record of civic issue resolution across all connected cities.</p>
+    </div>
+  </section>
+
+  <!-- National Stats -->
+  <section class="section-sm" style="background: #fff; border-bottom: 1px solid var(--border);">
+    <div class="container">
+      <div class="stats-grid">
+        <div class="stat-item" data-animate>
+          <div class="stat-number" data-count="12847">0</div>
+          <div class="stat-label">Total Reports Filed</div>
+        </div>
+        <div class="stat-item" data-animate data-delay="100">
+          <div class="stat-number" data-count="9432">0</div>
+          <div class="stat-label">Issues Resolved</div>
+        </div>
+        <div class="stat-item" data-animate data-delay="200">
+          <div class="stat-number" data-count="42">0</div>
+          <div class="stat-label">Cities Connected</div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-bottom" style="border:none; padding:0;">
+      <span>&copy; 2026 JanSetu AI</span>
+      <span>Built with &hearts; for better cities</span>
+    </div>
+  </div>
+</footer>
+
+<script src="/js/app.js"></script>
+</body>
+</html>

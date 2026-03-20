@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dev Dashboard — JanSetu AI</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+<nav class="navbar">
+  <div class="container">
+    <a href="/dev/dashboard" class="nav-brand">JanSetu<span>AI</span></a>
+    <ul class="nav-links">
+      <li><a href="/dev/dashboard">Dashboard</a></li>
+      <li><a href="/dev/training">Training</a></li>
+      <li><a href="/dev/users">Users</a></li>
+      <li><a href="/dev/analytics">Analytics</a></li>
+      <li><a href="#" onclick="logout()" class="btn btn-sm btn-outline">Logout</a></li>
+    </ul>
+    <button class="hamburger" onclick="document.querySelector('.nav-links').classList.toggle('open')"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<div class="dashboard">
+  <aside class="sidebar"><ul class="sidebar-nav" id="sidebar-nav"></ul></aside>
+  <main class="dash-main">
+    <div class="dash-header" data-animate>
+      <h1>⚙️ Developer Admin</h1>
+      <p>System monitoring and ML model management</p>
+    </div>
+
+    <div class="stat-cards">
+      <div class="stat-card">
+        <div class="sc-label">Model Accuracy</div>
+        <div class="sc-value" style="color:var(--green);" data-count="94" data-suffix="%">0%</div>
+      </div>
+      <div class="stat-card">
+        <div class="sc-label">API Uptime</div>
+        <div class="sc-value" style="color:var(--green);" data-count="99" data-suffix="%">0%</div>
+      </div>
+      <div class="stat-card">
+        <div class="sc-label">Avg Response</div>
+        <div class="sc-value" style="color:var(--teal);" data-count="234" data-suffix=" ms">0 ms</div>
+      </div>
+      <div class="stat-card">
+        <div class="sc-label">Training Sets</div>
+        <div class="sc-value" style="color:var(--amber);" data-count="847">0</div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:24px;">
+      <h4>System Health</h4>
+      <p style="font-size:.9rem; color:var(--slate-light); margin:12px 0;">All systems operational. Model performing at optimal levels.</p>
+    </div>
+  </main>
+</div>
+
+<script src="/js/app.js"></script>
+<script>
+  const session = Session.get();
+  if (!session || session.role !== 'developer') { window.location.href = '/login?role=developer'; }
+  else { document.getElementById('sidebar-nav').innerHTML = getNavHTML('developer', '/dev/dashboard'); }
+</script>
+</body>
+</html>

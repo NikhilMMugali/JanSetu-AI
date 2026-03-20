@@ -1,0 +1,28 @@
+{
+  "name": "jansetu-ai-backend",
+  "version": "1.0.0",
+  "description": "AI-powered civic engagement platform backend",
+  "module": "index.ts",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "build": "tsc"
+  },
+  "keywords": ["civic", "engagement", "ai", "vision", "smart-cities"],
+  "author": "JanSetu Team",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^5.2.1",
+    "dotenv": "^16.0.3",
+    "cors": "^2.8.5",
+    "helmet": "^7.0.0",
+    "mongoose": "^7.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/express": "^4.17.17",
+    "typescript": "^5.0.0"
+  }
+}
